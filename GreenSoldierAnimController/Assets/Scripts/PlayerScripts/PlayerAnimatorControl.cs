@@ -33,7 +33,7 @@ public class PlayerAnimatorControl : MonoBehaviour
         {
             if (playerController.walking)
             {
-                speedF = speedTarget;
+                speedF = 0.5f;
             }
             else
             {

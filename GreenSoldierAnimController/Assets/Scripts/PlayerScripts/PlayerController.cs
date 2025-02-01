@@ -25,6 +25,10 @@ public class PlayerController : MonoBehaviour
     private float v = 0;
     [SerializeField] private float smoothTime = 0.15f;
 
+    [SerializeField] private Vector3 nonAimDirection;
+    [SerializeField] private Quaternion lookDirection;
+    [SerializeField] private float modelRotationSpeed = 2.5f;
+
     private void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -37,6 +41,8 @@ public class PlayerController : MonoBehaviour
         RotateCamera();
         Movement();
         ArmControl();
+        ModelRotation();
+        Conditions();
     }
 
     private void Movement()
@@ -68,6 +74,32 @@ public class PlayerController : MonoBehaviour
         if (Input.GetButtonUp("Fire2"))
         {
             aiming = false;
+        }
+    }
+
+    private void ModelRotation()
+    {
+        if (!aiming)
+        {
+            nonAimDirection = forwardDirection * verticalInput + strafeDirection * horizontalInput;
+
+            if (nonAimDirection != Vector3.zero)
+            {
+                lookDirection = Quaternion.LookRotation(nonAimDirection);
+                soldierModel.localRotation = Quaternion.Slerp(soldierModel.localRotation, lookDirection, Time.deltaTime * modelRotationSpeed);
+            }
+        }
+    }
+
+    private void Conditions()
+    {
+        if (nonAimDirection != Vector3.zero)
+        {
+            walking = true;
+        }
+        else
+        {
+            walking = false;
         }
     }
 }
