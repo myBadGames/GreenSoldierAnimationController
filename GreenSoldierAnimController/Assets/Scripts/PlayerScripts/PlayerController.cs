@@ -27,9 +27,12 @@ public class PlayerController : MonoBehaviour
     private float v = 0;
     [SerializeField] private float smoothTime = 0.15f;
 
-    [SerializeField] private Vector3 nonAimDirection;
+    [SerializeField] private Vector3 nonAimModelDirection;
     [SerializeField] private Quaternion lookDirection;
     [SerializeField] private float modelRotationSpeed = 2.5f;
+    [SerializeField] private GameObject mainCamera;
+    [SerializeField] private GameObject aimCamera;
+
 
     private void Start()
     {
@@ -45,6 +48,7 @@ public class PlayerController : MonoBehaviour
         Movement();
         ArmControl();
         ModelRotation();
+        CameraControl();
     }
 
     private void MovementInput()
@@ -103,13 +107,16 @@ public class PlayerController : MonoBehaviour
 
     private void ArmControl()
     {
-        if (Input.GetButton("Fire2"))
+        if (Input.GetButton("Fire2") && !running)
         {
             aiming = true;
         }
         if (Input.GetButtonUp("Fire2"))
         {
-            aiming = false;
+            if (aiming)
+            {
+                aiming = false;
+            }
         }
     }
 
@@ -117,13 +124,32 @@ public class PlayerController : MonoBehaviour
     {
         if (!aiming)
         {
-            nonAimDirection = forwardDirection * verticalInput + strafeDirection * horizontalInput;
+            nonAimModelDirection = forwardDirection * verticalInput + strafeDirection * horizontalInput;
 
-            if (nonAimDirection != Vector3.zero)
+            if (nonAimModelDirection != Vector3.zero)
             {
-                lookDirection = Quaternion.LookRotation(nonAimDirection);
-                soldierModel.localRotation = Quaternion.Slerp(soldierModel.localRotation, lookDirection, Time.deltaTime * modelRotationSpeed);
+                lookDirection = Quaternion.LookRotation(nonAimModelDirection);
             }
+        }
+        else
+        {
+            lookDirection = Quaternion.LookRotation(forwardDirection);
+        }
+
+        soldierModel.localRotation = Quaternion.Slerp(soldierModel.localRotation, lookDirection, Time.deltaTime * modelRotationSpeed);
+    }
+
+    private void CameraControl()
+    {
+        if (!aiming)
+        {
+            mainCamera.SetActive(true);
+            aimCamera.SetActive(false);
+        }
+        else
+        {
+            mainCamera.SetActive(false);
+            aimCamera.SetActive(true);
         }
     }
 }
