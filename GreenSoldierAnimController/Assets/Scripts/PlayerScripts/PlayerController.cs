@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class PlayerController : MonoBehaviour
 {
@@ -32,6 +33,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float modelRotationSpeed = 2.5f;
     [SerializeField] private GameObject mainCamera;
     [SerializeField] private GameObject aimCamera;
+    public CinemachineImpulseSource impulseSource;
 
 
     private void Start()
@@ -39,6 +41,7 @@ public class PlayerController : MonoBehaviour
         controller = GetComponent<CharacterController>();
         soldierModel = transform.GetChild(0);
         focalPoint = transform.GetChild(1);
+        impulseSource = GetComponent<CinemachineImpulseSource>();
     }
 
     private void Update()
@@ -116,6 +119,14 @@ public class PlayerController : MonoBehaviour
             if (aiming)
             {
                 aiming = false;
+            }
+        }
+
+        if (aiming)
+        {
+            if (Input.GetButtonDown("Fire1"))
+            {
+                impulseSource.GenerateImpulse(aimCamera.transform.forward);
             }
         }
     }
