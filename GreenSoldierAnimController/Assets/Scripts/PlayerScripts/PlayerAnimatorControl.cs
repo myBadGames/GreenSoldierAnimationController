@@ -7,18 +7,15 @@ public class PlayerAnimatorControl : MonoBehaviour
     private PlayerController playerController;
     private Animator animator;
     [SerializeField] private float speedF;
-    [SerializeField] private int weaponType = 1;
     public float speedTarget;
+    [SerializeField] private bool aiming;
 
-    // Start is called before the first frame update
     void Start()
     {
         playerController = GetComponent<PlayerController>();
         animator = GetComponentInChildren<Animator>();
-        weaponType = 1;
     }
 
-    // Update is called once per frame
     void Update()
     {
         AnimatorParameters();
@@ -27,32 +24,38 @@ public class PlayerAnimatorControl : MonoBehaviour
     private void AnimatorParameters()
     {
         animator.SetFloat("Speed_f", speedF);
-        animator.SetInteger("WeaponType_int", weaponType);
+        animator.SetBool("Aiming", aiming);
 
         if (playerController != null)
         {
-            if (playerController.walking)
+            if (playerController.walking && !playerController.running)
             {
                 speedF = 0.5f;
             }
-            else
+            else if (playerController.walking && playerController.running)
             {
-                speedF = 0;
+                speedF = 1.0f;
+            }
+
+            else if (!playerController.walking && !playerController.running)
+            {
+                speedF = 0.0f;
             }
 
             if (playerController.aiming)
             {
-                weaponType = 2;
+                if (!aiming)
+                {
+                    aiming = true;
+                }
 
                 if (Input.GetButtonDown("Fire1"))
                 {
                     animator.SetTrigger("ShootTrig");
                 }
             }
-            else
-            {
-                weaponType = 1;
-            }
+            else if (!playerController.aiming)
+            { aiming = false; }
         }
     }
 }

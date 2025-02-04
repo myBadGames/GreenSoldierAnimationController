@@ -6,20 +6,22 @@ public class PlayerController : MonoBehaviour
 {
     private CharacterController controller;
     private Transform soldierModel;
+    public bool walking;
+    public bool running;
     [SerializeField] private float verticalInput;
     [SerializeField] private float horizontalInput;
     [SerializeField] private Vector3 forwardDirection;
     [SerializeField] private Vector3 strafeDirection;
     [SerializeField] private float movingSpeed = 2.5f;
+    [SerializeField] private float walkingpeed = 2.5f;
+    [SerializeField] private float runningSpeed = 5.0f;
 
     public bool aiming;
-    public bool walking;
-    public bool running;
 
     [SerializeField] private float horizontalMouse;
 
     private Transform focalPoint;
-    [SerializeField] private float rotationSpeed = 15.0f;
+    [SerializeField] private float rotationSpeed = 30.0f;
     [SerializeField] private float targetY;
     [SerializeField] private float focalY;
     private float v = 0;
@@ -39,22 +41,56 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         RotateCamera();
+        MovementInput();
         Movement();
         ArmControl();
         ModelRotation();
-        Conditions();
     }
 
-    private void Movement()
+    private void MovementInput()
     {
         verticalInput = Input.GetAxis("Vertical");
         horizontalInput = Input.GetAxis("Horizontal");
 
+        if (verticalInput != 0 || horizontalInput != 0)
+        {
+            walking = true;
+        }
+        else if (verticalInput != 0 && horizontalInput != 0)
+        {
+            walking = true;
+        }
+        else if (verticalInput == 0 && horizontalInput == 0)
+        {
+            walking = false;
+        }
+
+        if (Input.GetKey(KeyCode.LeftShift) && walking)
+        {
+            running = true;
+        }
+        if (Input.GetKeyUp(KeyCode.LeftShift) || !walking)
+        {
+            running = false;
+        }
+    }
+
+    private void Movement()
+    {
         forwardDirection = focalPoint.forward.normalized;
         strafeDirection = focalPoint.right.normalized;
 
         controller.Move(forwardDirection * verticalInput * movingSpeed * Time.deltaTime);
         controller.Move(strafeDirection * horizontalInput * movingSpeed * Time.deltaTime);
+
+        if (walking && !running)
+        {
+            movingSpeed = walkingpeed;
+        }
+        else if (walking && running)
+        {
+            movingSpeed = runningSpeed;
+        }
     }
 
     private void RotateCamera()
@@ -88,18 +124,6 @@ public class PlayerController : MonoBehaviour
                 lookDirection = Quaternion.LookRotation(nonAimDirection);
                 soldierModel.localRotation = Quaternion.Slerp(soldierModel.localRotation, lookDirection, Time.deltaTime * modelRotationSpeed);
             }
-        }
-    }
-
-    private void Conditions()
-    {
-        if (nonAimDirection != Vector3.zero)
-        {
-            walking = true;
-        }
-        else
-        {
-            walking = false;
         }
     }
 }
