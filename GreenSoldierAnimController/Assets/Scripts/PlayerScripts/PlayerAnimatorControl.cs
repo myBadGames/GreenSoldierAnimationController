@@ -9,12 +9,17 @@ public class PlayerAnimatorControl : MonoBehaviour
     [SerializeField] private float speedF;
     public bool shootB;
     [SerializeField] private bool aiming;
-    private string pistolFireStr  = "Weapons.PistolFire";
+    private string pistolFireStr = "Weapons.PistolFire";
+    [SerializeField] private float bodyVertical;
+    [SerializeField] private float bodyVerticalTarget;
+    private float bodyVerticalVelocity;
+    [SerializeField] private float bodyVerticalSmoothTime = 0.05f;
 
     void Start()
     {
         playerController = GetComponent<PlayerController>();
         animator = GetComponentInChildren<Animator>();
+        bodyVertical = 0.0f;
     }
 
     void Update()
@@ -27,33 +32,40 @@ public class PlayerAnimatorControl : MonoBehaviour
         animator.SetFloat("Speed_f", speedF);
         animator.SetBool("Shoot_b", shootB);
         animator.SetBool("Aiming", aiming);
+        animator.SetFloat("Body_Vertical_f", bodyVertical);
 
-        if (playerController != null)
+
+        if (playerController.walking && !playerController.running)
         {
-            if (playerController.walking && !playerController.running)
-            {
-                speedF = 0.49f;
-            }
-            else if (playerController.walking && playerController.running)
-            {
-                speedF = 1.0f;
-            }
-
-            else if (!playerController.walking && !playerController.running)
-            {
-                speedF = 0.0f;
-            }
-
-            if (playerController.aiming)
-            {
-                if (!aiming)
-                {
-                    aiming = true;
-                }
-            }
-            else if (!playerController.aiming)
-            { aiming = false; }
+            speedF = 0.49f;
         }
+        else if (playerController.walking && playerController.running)
+        {
+            speedF = 1.0f;
+        }
+
+        else if (!playerController.walking && !playerController.running)
+        {
+            speedF = 0.0f;
+        }
+
+        if (playerController.aiming)
+        {
+            if (!aiming)
+            {
+                aiming = true;
+            }
+
+            bodyVerticalTarget = -0.02222f * playerController.targetX;
+
+        }
+        else if (!playerController.aiming)
+        {
+            aiming = false;
+            bodyVerticalTarget = 0;
+        }
+
+        bodyVertical = Mathf.SmoothDamp(bodyVertical, bodyVerticalTarget, ref bodyVerticalVelocity, bodyVerticalSmoothTime);
     }
 
     public void ShootTrig()

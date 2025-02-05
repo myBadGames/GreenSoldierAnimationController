@@ -29,7 +29,7 @@ public class PlayerController : MonoBehaviour
     private Transform focalPoint;
     [SerializeField] private float rotationSpeed = 30.0f;
     [SerializeField] private float targetY;
-    [SerializeField] private float targetX;
+    public float targetX;
     [SerializeField] private float slerpSpeed = 5.0f;
     [SerializeField] private float xRotationLimit = 45.0f;
 
