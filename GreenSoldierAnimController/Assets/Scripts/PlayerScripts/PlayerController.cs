@@ -6,6 +6,7 @@ using Cinemachine;
 public class PlayerController : MonoBehaviour
 {
     private CharacterController controller;
+    private PlayerAnimatorControl animatorControl;
     private Transform soldierModel;
     public bool walking;
     public bool running;
@@ -33,12 +34,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float modelRotationSpeed = 2.5f;
     [SerializeField] private GameObject mainCamera;
     [SerializeField] private GameObject aimCamera;
-    public CinemachineImpulseSource impulseSource;
+    [SerializeField] private CinemachineImpulseSource impulseSource;
 
+    public float fireTime;
+    [SerializeField] private float fireRate = 3.0f;
 
     private void Start()
     {
         controller = GetComponent<CharacterController>();
+        animatorControl = GetComponent<PlayerAnimatorControl>();
         soldierModel = transform.GetChild(0);
         focalPoint = transform.GetChild(1);
         impulseSource = GetComponent<CinemachineImpulseSource>();
@@ -47,11 +51,12 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         RotateCamera();
+        CameraControl();
         MovementInput();
         Movement();
-        ArmControl();
+        AimControl();
+        AttackControl();
         ModelRotation();
-        CameraControl();
     }
 
     private void MovementInput()
@@ -108,7 +113,7 @@ public class PlayerController : MonoBehaviour
         focalPoint.localRotation = Quaternion.Euler(0, focalY, 0);
     }
 
-    private void ArmControl()
+    private void AimControl()
     {
         if (Input.GetButton("Fire2") && !running)
         {
@@ -121,11 +126,16 @@ public class PlayerController : MonoBehaviour
                 aiming = false;
             }
         }
-
+    }    
+    
+    private void AttackControl()
+    {
         if (aiming)
         {
-            if (Input.GetButtonDown("Fire1"))
+            if (Input.GetButtonDown("Fire1") && Time.time > fireTime)
             {
+                fireTime = Time.time + 1 / fireRate;
+                animatorControl.ShootTrig();
                 impulseSource.GenerateImpulse(aimCamera.transform.forward);
             }
         }

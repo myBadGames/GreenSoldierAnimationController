@@ -7,8 +7,9 @@ public class PlayerAnimatorControl : MonoBehaviour
     private PlayerController playerController;
     private Animator animator;
     [SerializeField] private float speedF;
-    public float speedTarget;
+    public bool shootB;
     [SerializeField] private bool aiming;
+    private string pistolFireStr  = "Weapons.PistolFire";
 
     void Start()
     {
@@ -24,6 +25,7 @@ public class PlayerAnimatorControl : MonoBehaviour
     private void AnimatorParameters()
     {
         animator.SetFloat("Speed_f", speedF);
+        animator.SetBool("Shoot_b", shootB);
         animator.SetBool("Aiming", aiming);
 
         if (playerController != null)
@@ -48,14 +50,28 @@ public class PlayerAnimatorControl : MonoBehaviour
                 {
                     aiming = true;
                 }
-
-                if (Input.GetButtonDown("Fire1"))
-                {
-                    animator.SetTrigger("ShootTrig");
-                }
             }
             else if (!playerController.aiming)
             { aiming = false; }
         }
+    }
+
+    public void ShootTrig()
+    {
+        if (!shootB)
+        {
+            shootB = true;
+        }
+        else
+        {
+            Debug.Log("WTF");
+            animator.Play(pistolFireStr, 5, 0);
+        }
+    }
+
+    public void ShootBool()
+    {
+        Debug.Log("IT WORKS");
+        shootB = false;
     }
 }
