@@ -12,6 +12,8 @@ public class PlayerController : MonoBehaviour
     public bool running;
     [SerializeField] private float verticalInput;
     [SerializeField] private float horizontalInput;
+    private Transform compass;
+    [SerializeField] private Vector3 focalEulerAngles;
     [SerializeField] private Vector3 forwardDirection;
     [SerializeField] private Vector3 strafeDirection;
     [SerializeField] private float movingSpeed = 2.5f;
@@ -20,18 +22,23 @@ public class PlayerController : MonoBehaviour
 
     public bool aiming;
 
+    [SerializeField] private Quaternion newRotation;
     [SerializeField] private float horizontalMouse;
+    [SerializeField] private float verticalMouse;
 
     private Transform focalPoint;
     [SerializeField] private float rotationSpeed = 30.0f;
     [SerializeField] private float targetY;
-    [SerializeField] private float focalY;
-    private float v = 0;
-    [SerializeField] private float smoothTime = 0.15f;
+    [SerializeField] private float targetX;
+    [SerializeField] private float slerpSpeed = 5.0f;
+    [SerializeField] private float xRotationLimit = 45.0f;
 
     [SerializeField] private Vector3 nonAimModelDirection;
-    [SerializeField] private Quaternion lookDirection;
-    [SerializeField] private float modelRotationSpeed = 2.5f;
+    [SerializeField] private Quaternion modelDirection;
+    [SerializeField] private float modelY;
+    [SerializeField] private Vector3 modelEulerAngles;
+    [SerializeField] private float modelRotationSpeed = 5.0f;
+
     [SerializeField] private GameObject mainCamera;
     [SerializeField] private GameObject aimCamera;
     [SerializeField] private CinemachineImpulseSource impulseSource;
@@ -45,15 +52,16 @@ public class PlayerController : MonoBehaviour
         animatorControl = GetComponent<PlayerAnimatorControl>();
         soldierModel = transform.GetChild(0);
         focalPoint = transform.GetChild(1);
+        compass = transform.GetChild(2);
         impulseSource = GetComponent<CinemachineImpulseSource>();
     }
 
     private void Update()
     {
-        RotateCamera();
-        CameraControl();
         MovementInput();
         Movement();
+        RotateCamera();
+        CameraControl();
         AimControl();
         AttackControl();
         ModelRotation();
@@ -89,8 +97,11 @@ public class PlayerController : MonoBehaviour
 
     private void Movement()
     {
-        forwardDirection = focalPoint.forward.normalized;
-        strafeDirection = focalPoint.right.normalized;
+        focalEulerAngles = focalPoint.localRotation.eulerAngles;
+        compass.localRotation = Quaternion.Euler(0, focalEulerAngles.y, 0);
+
+        forwardDirection = compass.forward.normalized;
+        strafeDirection = compass.right.normalized;
 
         controller.Move(forwardDirection * verticalInput * movingSpeed * Time.deltaTime);
         controller.Move(strafeDirection * horizontalInput * movingSpeed * Time.deltaTime);
@@ -109,8 +120,28 @@ public class PlayerController : MonoBehaviour
     {
         horizontalMouse = Input.GetAxisRaw("Mouse X");
         targetY += horizontalMouse * rotationSpeed * Time.deltaTime;
-        focalY = Mathf.SmoothDampAngle(focalY, targetY, ref v, smoothTime);
-        focalPoint.localRotation = Quaternion.Euler(0, focalY, 0);
+
+        verticalMouse = Input.GetAxis("Mouse Y");
+        targetX = Mathf.Clamp(targetX, -xRotationLimit, xRotationLimit);
+        targetX += -verticalMouse * rotationSpeed / 2 * Time.deltaTime;
+
+        newRotation = Quaternion.Euler(targetX, targetY, 0);
+
+        focalPoint.localRotation = Quaternion.Slerp(focalPoint.localRotation, newRotation, Time.deltaTime * slerpSpeed);
+    }
+
+    private void CameraControl()
+    {
+        if (!aiming)
+        {
+            mainCamera.SetActive(true);
+            aimCamera.SetActive(false);
+        }
+        else
+        {
+            mainCamera.SetActive(false);
+            aimCamera.SetActive(true);
+        }
     }
 
     private void AimControl()
@@ -149,28 +180,16 @@ public class PlayerController : MonoBehaviour
 
             if (nonAimModelDirection != Vector3.zero)
             {
-                lookDirection = Quaternion.LookRotation(nonAimModelDirection);
+                modelDirection = Quaternion.LookRotation(nonAimModelDirection, Vector3.up);
             }
         }
         else
         {
-            lookDirection = Quaternion.LookRotation(forwardDirection);
+            modelDirection = Quaternion.LookRotation(forwardDirection, Vector3.up);
         }
 
-        soldierModel.localRotation = Quaternion.Slerp(soldierModel.localRotation, lookDirection, Time.deltaTime * modelRotationSpeed);
-    }
-
-    private void CameraControl()
-    {
-        if (!aiming)
-        {
-            mainCamera.SetActive(true);
-            aimCamera.SetActive(false);
-        }
-        else
-        {
-            mainCamera.SetActive(false);
-            aimCamera.SetActive(true);
-        }
+        modelEulerAngles = modelDirection.eulerAngles;
+        modelY = Mathf.LerpAngle(modelY, modelEulerAngles.y, Time.deltaTime * modelRotationSpeed);
+        soldierModel.localRotation = Quaternion.Euler(0, modelY, 0);
     }
 }

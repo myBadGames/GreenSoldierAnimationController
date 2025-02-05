@@ -105,6 +105,37 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &6011540141379389475
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1211742128929023840}
+  m_Layer: 0
+  m_Name: Compass
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1211742128929023840
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6011540141379389475}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.45, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3850118241391151427}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7530142754382214401
 GameObject:
   m_ObjectHideFlags: 0
@@ -152,7 +183,7 @@ GameObject:
   - component: {fileID: 5020767151991032974}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -172,6 +203,7 @@ Transform:
   m_Children:
   - {fileID: 1750542644554677889}
   - {fileID: 6999781715531160756}
+  - {fileID: 1211742128929023840}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!143 &3146032495025119991
@@ -216,23 +248,31 @@ MonoBehaviour:
   running: 0
   verticalInput: 0
   horizontalInput: 0
+  focalEulerAngles: {x: 0, y: 0, z: 0}
   forwardDirection: {x: 0, y: 0, z: 0}
   strafeDirection: {x: 0, y: 0, z: 0}
   movingSpeed: 2.5
   walkingpeed: 2.5
   runningSpeed: 5
   aiming: 0
+  newRotation: {x: 0, y: 0, z: 0, w: 0}
   horizontalMouse: 0
+  verticalMouse: 0
   rotationSpeed: 30
   targetY: 0
-  focalY: 0
-  smoothTime: 0.15
+  targetX: 0
+  slerpSpeed: 5
+  xRotationLimit: 45
   nonAimModelDirection: {x: 0, y: 0, z: 0}
-  lookDirection: {x: 0, y: 0, z: 0, w: 0}
+  modelDirection: {x: 0, y: 0, z: 0, w: 0}
+  modelY: 0
+  modelEulerAngles: {x: 0, y: 0, z: 0}
   modelRotationSpeed: 2.5
   mainCamera: {fileID: 0}
   aimCamera: {fileID: 0}
   impulseSource: {fileID: 0}
+  fireTime: 0
+  fireRate: 3
 --- !u!114 &6875269793977615667
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -246,7 +286,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speedF: 0
-  speedTarget: 0.5
+  shootB: 0
   aiming: 0
 --- !u!114 &5020767151991032974
 MonoBehaviour:

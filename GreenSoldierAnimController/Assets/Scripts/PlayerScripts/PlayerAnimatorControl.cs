@@ -64,14 +64,7 @@ public class PlayerAnimatorControl : MonoBehaviour
         }
         else
         {
-            Debug.Log("WTF");
             animator.Play(pistolFireStr, 5, 0);
         }
-    }
-
-    public void ShootBool()
-    {
-        Debug.Log("IT WORKS");
-        shootB = false;
     }
 }
