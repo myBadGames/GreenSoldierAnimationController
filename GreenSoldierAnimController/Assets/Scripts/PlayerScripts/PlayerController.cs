@@ -85,7 +85,7 @@ public class PlayerController : MonoBehaviour
             walking = false;
         }
 
-        if (Input.GetKey(KeyCode.LeftShift) && walking)
+        if (Input.GetKey(KeyCode.LeftShift) && walking && !aiming)
         {
             running = true;
         }

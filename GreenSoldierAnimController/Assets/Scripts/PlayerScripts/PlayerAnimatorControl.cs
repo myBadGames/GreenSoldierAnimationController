@@ -56,8 +56,8 @@ public class PlayerAnimatorControl : MonoBehaviour
                 aiming = true;
             }
 
+            bodyVerticalTarget = Mathf.Clamp(bodyVerticalTarget, -1.0f, 1.0f);
             bodyVerticalTarget = -0.02222f * playerController.targetX;
-
         }
         else if (!playerController.aiming)
         {
