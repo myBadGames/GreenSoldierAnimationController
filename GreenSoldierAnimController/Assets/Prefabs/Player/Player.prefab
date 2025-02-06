@@ -267,12 +267,12 @@ MonoBehaviour:
   modelDirection: {x: 0, y: 0, z: 0, w: 0}
   modelY: 0
   modelEulerAngles: {x: 0, y: 0, z: 0}
-  modelRotationSpeed: 2.5
+  modelRotationSpeed: 5
   mainCamera: {fileID: 0}
   aimCamera: {fileID: 0}
   impulseSource: {fileID: 0}
   fireTime: 0
-  fireRate: 3
+  fireRate: 4
 --- !u!114 &6875269793977615667
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -288,6 +288,9 @@ MonoBehaviour:
   speedF: 0
   shootB: 0
   aiming: 0
+  bodyVertical: 0
+  bodyVerticalTarget: 0
+  bodyVerticalSmoothTime: 0.05
 --- !u!114 &5020767151991032974
 MonoBehaviour:
   m_ObjectHideFlags: 0
