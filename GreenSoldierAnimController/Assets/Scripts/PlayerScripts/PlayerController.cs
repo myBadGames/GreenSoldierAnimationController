@@ -42,6 +42,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject mainCamera;
     [SerializeField] private GameObject aimCamera;
     [SerializeField] private CinemachineImpulseSource impulseSource;
+    [SerializeField] private Vector3 impulseDirection;
 
     public float fireTime;
     [SerializeField] private float fireRate = 4.0f;
@@ -167,7 +168,17 @@ public class PlayerController : MonoBehaviour
             {
                 fireTime = Time.time + 1 / fireRate;
                 animatorControl.ShootTrig();
-                impulseSource.GenerateImpulse(aimCamera.transform.forward);
+
+                if (forwardDirection.z >= 0.95f || forwardDirection.z <= -0.95) 
+                {
+                    impulseDirection = forwardDirection;
+                }
+                else if (strafeDirection.z >= 0.95f || strafeDirection.z <= -0.95f)
+                {
+                    impulseDirection = strafeDirection;
+                }
+
+                impulseSource.GenerateImpulse(impulseDirection);
             }
         }
     }
