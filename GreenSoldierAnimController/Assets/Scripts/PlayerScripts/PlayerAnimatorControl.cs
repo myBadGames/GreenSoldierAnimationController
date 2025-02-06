@@ -66,6 +66,7 @@ public class PlayerAnimatorControl : MonoBehaviour
         }
 
         bodyVertical = Mathf.SmoothDamp(bodyVertical, bodyVerticalTarget, ref bodyVerticalVelocity, bodyVerticalSmoothTime);
+        CrouchingTiger();
     }
 
     public void ShootTrig()
@@ -78,5 +79,14 @@ public class PlayerAnimatorControl : MonoBehaviour
         {
             animator.Play(pistolFireStr, 5, 0);
         }
+    }
+
+    [SerializeField] private bool crouchB;
+
+    void CrouchingTiger()
+    {
+        animator.SetBool("Crouch_b", crouchB);
+
+        crouchB = playerController.crouch;
     }
 }

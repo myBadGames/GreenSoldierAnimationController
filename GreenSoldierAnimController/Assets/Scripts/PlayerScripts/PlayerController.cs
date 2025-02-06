@@ -44,7 +44,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private CinemachineImpulseSource impulseSource;
 
     public float fireTime;
-    [SerializeField] private float fireRate = 3.0f;
+    [SerializeField] private float fireRate = 4.0f;
 
     private void Start()
     {
@@ -191,5 +191,26 @@ public class PlayerController : MonoBehaviour
         modelEulerAngles = modelDirection.eulerAngles;
         modelY = Mathf.LerpAngle(modelY, modelEulerAngles.y, Time.deltaTime * modelRotationSpeed);
         soldierModel.localRotation = Quaternion.Euler(0, modelY, 0);
+
+        // *******************************
+
+        CrouchingTiger();
+    }
+
+    public bool crouch;
+
+    void CrouchingTiger()
+    {
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            if (crouch)
+            {
+                crouch = false;
+            }
+            else
+            {
+                crouch = true;
+            }
+        }
     }
 }
