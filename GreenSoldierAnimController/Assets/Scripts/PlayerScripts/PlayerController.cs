@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float movingSpeed = 2.5f;
     [SerializeField] private float walkingpeed = 2.5f;
     [SerializeField] private float runningSpeed = 5.0f;
+    [SerializeField] private float crouchSpeed = 1.5f;
 
     public bool aiming;
 
@@ -46,6 +47,8 @@ public class PlayerController : MonoBehaviour
 
     public float fireTime;
     [SerializeField] private float fireRate = 4.0f;
+
+    public bool crouch;
 
     private void Start()
     {
@@ -94,6 +97,18 @@ public class PlayerController : MonoBehaviour
         {
             running = false;
         }
+
+        if (Input.GetKeyDown(KeyCode.C) && !running)
+        {
+            if (crouch)
+            {
+                crouch = false;
+            }
+            else
+            {
+                crouch = true;
+            }
+        }
     }
 
     private void Movement()
@@ -107,13 +122,17 @@ public class PlayerController : MonoBehaviour
         controller.Move(forwardDirection * verticalInput * movingSpeed * Time.deltaTime);
         controller.Move(strafeDirection * horizontalInput * movingSpeed * Time.deltaTime);
 
-        if (walking && !running)
+        if (walking && !running && !crouch)
         {
             movingSpeed = walkingpeed;
         }
-        else if (walking && running)
+        else if (walking && running && !crouch)
         {
             movingSpeed = runningSpeed;
+        }
+        else if (crouch)
+        {
+            movingSpeed = crouchSpeed;
         }
     }
 
@@ -203,25 +222,6 @@ public class PlayerController : MonoBehaviour
         modelY = Mathf.LerpAngle(modelY, modelEulerAngles.y, Time.deltaTime * modelRotationSpeed);
         soldierModel.localRotation = Quaternion.Euler(0, modelY, 0);
 
-        // *******************************
 
-        CrouchingTiger();
-    }
-
-    public bool crouch;
-
-    void CrouchingTiger()
-    {
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            if (crouch)
-            {
-                crouch = false;
-            }
-            else
-            {
-                crouch = true;
-            }
-        }
     }
 }
