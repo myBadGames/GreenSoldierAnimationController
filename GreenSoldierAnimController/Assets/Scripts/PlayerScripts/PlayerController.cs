@@ -42,6 +42,8 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private GameObject mainCamera;
     [SerializeField] private GameObject aimCamera;
+    [SerializeField] private GameObject crouchCam;
+    [SerializeField] private GameObject aimCamCrouch;
     [SerializeField] private CinemachineImpulseSource impulseSource;
     [SerializeField] private Vector3 impulseDirection;
 
@@ -152,15 +154,37 @@ public class PlayerController : MonoBehaviour
 
     private void CameraControl()
     {
-        if (!aiming)
+        if (!crouch)
         {
-            mainCamera.SetActive(true);
-            aimCamera.SetActive(false);
+            crouchCam.SetActive(false);
+            aimCamCrouch.SetActive(false);
+
+            if (!aiming)
+            {
+                mainCamera.SetActive(true);
+                aimCamera.SetActive(false);
+            }
+            else
+            {
+                mainCamera.SetActive(false);
+                aimCamera.SetActive(true);
+            }
         }
         else
         {
             mainCamera.SetActive(false);
-            aimCamera.SetActive(true);
+            aimCamera.SetActive(false);
+
+            if (!aiming)
+            {
+                crouchCam.SetActive(true);
+                aimCamCrouch.SetActive(false);
+            }
+            else
+            {
+                crouchCam.SetActive(false);
+                aimCamCrouch.SetActive(true);
+            }
         }
     }
 
@@ -221,7 +245,5 @@ public class PlayerController : MonoBehaviour
         modelEulerAngles = modelDirection.eulerAngles;
         modelY = Mathf.LerpAngle(modelY, modelEulerAngles.y, Time.deltaTime * modelRotationSpeed);
         soldierModel.localRotation = Quaternion.Euler(0, modelY, 0);
-
-
     }
 }
