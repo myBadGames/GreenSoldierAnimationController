@@ -231,7 +231,7 @@ CharacterController:
   m_StepOffset: 0.3
   m_SkinWidth: 0.01
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0.88, z: 0}
+  m_Center: {x: 0, y: 0.87, z: 0}
 --- !u!114 &186366210302156564
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -254,6 +254,7 @@ MonoBehaviour:
   movingSpeed: 2.5
   walkingpeed: 2.5
   runningSpeed: 5
+  crouchSpeed: 1.5
   aiming: 0
   newRotation: {x: 0, y: 0, z: 0, w: 0}
   horizontalMouse: 0
@@ -270,9 +271,17 @@ MonoBehaviour:
   modelRotationSpeed: 5
   mainCamera: {fileID: 0}
   aimCamera: {fileID: 0}
+  crouchCam: {fileID: 0}
+  aimCamCrouch: {fileID: 0}
   impulseSource: {fileID: 0}
+  impulseDirection: {x: 0, y: 0, z: 0}
   fireTime: 0
   fireRate: 4
+  crouch: 0
+  vault: 0
+  vaultTime: 0
+  vaultRate: 1.2
+  modelPosSmoothTime: 0.15
 --- !u!114 &6875269793977615667
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -291,6 +300,8 @@ MonoBehaviour:
   bodyVertical: 0
   bodyVerticalTarget: 0
   bodyVerticalSmoothTime: 0.05
+  crouchB: 0
+  vault: 0
 --- !u!114 &5020767151991032974
 MonoBehaviour:
   m_ObjectHideFlags: 0
