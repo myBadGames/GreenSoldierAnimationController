@@ -56,6 +56,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float vaultTime;
     [SerializeField] private float vaultRate = 1.2f;
 
+    private Vector3 modelPosVelocity = Vector3.zero;
+    [SerializeField] private float modelPosSmoothTime = 0.15f;
+
     private void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -75,20 +78,9 @@ public class PlayerController : MonoBehaviour
         AimControl();
         AttackControl();
         ModelRotation();
+        ModelPosition();
 
-        if (Input.GetKeyDown(KeyCode.Space) && Time.time > vaultTime)
-        {
-            vaultTime = Time.time + 1 / vaultRate;
-            vault = true;
-        }
 
-        if (vault)
-        {
-            if (Time.time > vaultTime)
-            {
-                vault = false;
-            }
-        }
     }
 
     private void MovementInput()
@@ -127,6 +119,20 @@ public class PlayerController : MonoBehaviour
             else
             {
                 crouch = true;
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space) && Time.time > vaultTime && !aiming)
+        {
+            vaultTime = Time.time + 1 / vaultRate;
+            vault = true;
+        }
+
+        if (vault)
+        {
+            if (Time.time > vaultTime)
+            {
+                vault = false;
             }
         }
     }
@@ -263,5 +269,16 @@ public class PlayerController : MonoBehaviour
         modelEulerAngles = modelDirection.eulerAngles;
         modelY = Mathf.LerpAngle(modelY, modelEulerAngles.y, Time.deltaTime * modelRotationSpeed);
         soldierModel.localRotation = Quaternion.Euler(0, modelY, 0);
+    }
+
+    private void ModelPosition()
+    {
+        if (!vault)
+        {
+            if (soldierModel.localPosition != Vector3.zero)
+            {
+                soldierModel.localPosition = Vector3.SmoothDamp(soldierModel.localPosition, Vector3.zero, ref modelPosVelocity, modelPosSmoothTime);
+            }
+        }
     }
 }
