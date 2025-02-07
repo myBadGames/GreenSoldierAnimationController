@@ -59,6 +59,13 @@ public class PlayerController : MonoBehaviour
     private Vector3 modelPosVelocity = Vector3.zero;
     [SerializeField] private float modelPosSmoothTime = 0.15f;
 
+    private Vector3 standingCenter = new Vector3(0, 0.87f, 0);
+    private float standingHeight = 1.75f;
+    private Vector3 crouchingCenter = new Vector3(0, 0.62f, 0);
+    private float crouchingHeight = 1.25f;
+    private float colliderLerpDuration = 0.1123f;
+    [SerializeField] private float colliderLerpTime;
+
     private void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -67,6 +74,7 @@ public class PlayerController : MonoBehaviour
         focalPoint = transform.GetChild(1);
         compass = transform.GetChild(2);
         impulseSource = GetComponent<CinemachineImpulseSource>();
+        colliderLerpTime = colliderLerpDuration;
     }
 
     private void Update()
@@ -75,12 +83,11 @@ public class PlayerController : MonoBehaviour
         Movement();
         RotateCamera();
         CameraControl();
+        ColliderControl();
         AimControl();
         AttackControl();
         ModelRotation();
         ModelPosition();
-
-
     }
 
     private void MovementInput()
@@ -104,6 +111,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftShift) && walking && !aiming)
         {
             running = true;
+            crouch = false;
         }
         if (Input.GetKeyUp(KeyCode.LeftShift) || !walking)
         {
@@ -115,10 +123,12 @@ public class PlayerController : MonoBehaviour
             if (crouch)
             {
                 crouch = false;
+                colliderLerpTime = 0;
             }
             else
             {
                 crouch = true;
+                colliderLerpTime = 0;
             }
         }
 
@@ -156,7 +166,7 @@ public class PlayerController : MonoBehaviour
         {
             movingSpeed = runningSpeed;
         }
-        else if (crouch)
+        else if (crouch && !running)
         {
             movingSpeed = crouchSpeed;
         }
@@ -278,6 +288,38 @@ public class PlayerController : MonoBehaviour
             if (soldierModel.localPosition != Vector3.zero)
             {
                 soldierModel.localPosition = Vector3.SmoothDamp(soldierModel.localPosition, Vector3.zero, ref modelPosVelocity, modelPosSmoothTime);
+            }
+        }
+    }
+
+    private void ColliderControl()
+    {
+        if (!crouch)
+        {
+            if (colliderLerpTime < colliderLerpDuration)
+            {
+                controller.center = Vector3.Lerp(crouchingCenter, standingCenter, colliderLerpTime / colliderLerpDuration);
+                controller.height = Mathf.Lerp(crouchingHeight, standingHeight, colliderLerpTime / colliderLerpDuration);
+                colliderLerpTime += Time.deltaTime;
+            }
+            else
+            {
+                controller.center = standingCenter;
+                controller.height = standingHeight;
+            }
+        }
+        else
+        {
+            if (colliderLerpTime < colliderLerpDuration)
+            {
+                controller.center = Vector3.Lerp(standingCenter, crouchingCenter, colliderLerpTime / colliderLerpDuration);
+                controller.height = Mathf.Lerp(standingHeight, crouchingHeight, colliderLerpTime / colliderLerpDuration);
+                colliderLerpTime += Time.deltaTime;
+            }
+            else
+            {
+                controller.center = crouchingCenter;
+                controller.height = crouchingHeight;
             }
         }
     }
