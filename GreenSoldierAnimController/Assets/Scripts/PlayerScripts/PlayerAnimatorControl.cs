@@ -14,6 +14,8 @@ public class PlayerAnimatorControl : MonoBehaviour
     [SerializeField] private float bodyVerticalTarget;
     private float bodyVerticalVelocity;
     [SerializeField] private float bodyVerticalSmoothTime = 0.05f;
+    [SerializeField] private bool crouchB;
+    [SerializeField] private bool vault;
 
     void Start()
     {
@@ -66,7 +68,15 @@ public class PlayerAnimatorControl : MonoBehaviour
         }
 
         bodyVertical = Mathf.SmoothDamp(bodyVertical, bodyVerticalTarget, ref bodyVerticalVelocity, bodyVerticalSmoothTime);
-        CrouchingTiger();
+
+        animator.SetBool("Crouch_b", crouchB);
+
+        crouchB = playerController.crouch;
+
+        animator.SetBool("Vault", vault);
+
+        vault = playerController.vault;
+
     }
 
     public void ShootTrig()
@@ -79,14 +89,5 @@ public class PlayerAnimatorControl : MonoBehaviour
         {
             animator.Play(pistolFireStr, 5, 0);
         }
-    }
-
-    [SerializeField] private bool crouchB;
-
-    void CrouchingTiger()
-    {
-        animator.SetBool("Crouch_b", crouchB);
-
-        crouchB = playerController.crouch;
     }
 }

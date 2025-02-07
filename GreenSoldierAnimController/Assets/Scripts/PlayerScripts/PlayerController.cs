@@ -52,6 +52,10 @@ public class PlayerController : MonoBehaviour
 
     public bool crouch;
 
+    public bool vault;
+    [SerializeField] private float vaultTime;
+    [SerializeField] private float vaultRate = 1.2f;
+
     private void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -71,6 +75,20 @@ public class PlayerController : MonoBehaviour
         AimControl();
         AttackControl();
         ModelRotation();
+
+        if (Input.GetKeyDown(KeyCode.Space) && Time.time > vaultTime)
+        {
+            vaultTime = Time.time + 1 / vaultRate;
+            vault = true;
+        }
+
+        if (vault)
+        {
+            if (Time.time > vaultTime)
+            {
+                vault = false;
+            }
+        }
     }
 
     private void MovementInput()
