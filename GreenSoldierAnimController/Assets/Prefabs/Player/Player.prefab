@@ -273,7 +273,7 @@ MonoBehaviour:
   aimCamera: {fileID: 0}
   crouchCam: {fileID: 0}
   aimCamCrouch: {fileID: 0}
-  impulseSource: {fileID: 0}
+  impulseSource: {fileID: 5020767151991032974}
   impulseDirection: {x: 0, y: 0, z: 0}
   fireTime: 0
   fireRate: 4
@@ -282,6 +282,7 @@ MonoBehaviour:
   vaultTime: 0
   vaultRate: 1.2
   modelPosSmoothTime: 0.15
+  colliderLerpTime: 0
 --- !u!114 &6875269793977615667
 MonoBehaviour:
   m_ObjectHideFlags: 0
