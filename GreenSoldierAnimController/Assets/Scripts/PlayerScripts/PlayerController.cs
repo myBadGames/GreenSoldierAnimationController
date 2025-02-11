@@ -65,6 +65,7 @@ public class PlayerController : MonoBehaviour
     private float crouchingHeight = 1.25f;
     private float colliderLerpDuration = 0.1123f;
     [SerializeField] private float colliderLerpTime;
+    [SerializeField] private bool modelMoving;
 
     private void Start()
     {
@@ -87,7 +88,7 @@ public class PlayerController : MonoBehaviour
         AimControl();
         AttackControl();
         ModelRotation();
-        ModelPosition();
+        ModelPosition2();
     }
 
     private void MovementInput()
@@ -135,7 +136,9 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > vaultTime && !aiming)
         {
             vaultTime = Time.time + 1 / vaultRate;
+            modelMoving = true;
             vault = true;
+            StartCoroutine(ResetPositonRoutine());
         }
 
         if (vault)
@@ -290,7 +293,7 @@ public class PlayerController : MonoBehaviour
                 soldierModel.localPosition = Vector3.SmoothDamp(soldierModel.localPosition, Vector3.zero, ref modelPosVelocity, modelPosSmoothTime);
             }
         }
-    }
+    }    
 
     private void ColliderControl()
     {
@@ -323,4 +326,54 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+
+    private void ModelPosition2()
+    {
+        if (!modelMoving)
+        {
+            if (!vault)
+            {
+                if (soldierModel.localPosition != Vector3.zero)
+                {
+                    soldierModel.localPosition = Vector3.SmoothDamp(soldierModel.localPosition, Vector3.zero, ref modelPosVelocity, modelPosSmoothTime);
+                }
+            }
+        }
+    }
+
+    IEnumerator ResetPositonRoutine()
+    {
+        controller.excludeLayers = obsLayerSet.value;
+
+        yield return new WaitForSeconds(1.11f);
+
+        Vector3 startPosition = transform.position;
+        Vector3 modelPosition = soldierModel.transform.position;
+        float timeE = 0;
+        float duration = 0.25f;
+
+        while (timeE < duration)
+        {
+            soldierModel.transform.position = modelPosition;
+            transform.position = Vector3.Lerp(startPosition, modelPosition, timeE / duration);
+            timeE += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.position = modelPosition;
+        soldierModel.transform.localPosition = Vector3.zero;
+        modelMoving = false;
+        controller.excludeLayers = 0;
+    }
+
+    private LayerMask obsLayerSet
+    {
+        get { return obstacleLayer; }
+        set
+        {
+            obstacleLayer = value;
+        }
+    }
+
+    private LayerMask obstacleLayer = 1 << 6;
 }
