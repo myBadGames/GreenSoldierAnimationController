@@ -88,14 +88,21 @@ public class PlayerController : MonoBehaviour
         AttackControl();
         ModelRotation();
         ModelPosition();
+
+        if (walking)
+        {
+            vaultDireciton = new Vector3(Mathf.RoundToInt(nonAimModelDirection.x), 0, Mathf.RoundToInt(nonAimModelDirection.z));
+        }
     }
 
     private void MovementInput()
     {
         verticalInput = Input.GetAxis("Vertical");
         horizontalInput = Input.GetAxis("Horizontal");        
+
         float verticalRaw = Input.GetAxisRaw("Vertical");
         float horizontalRaw = Input.GetAxisRaw("Horizontal");
+
         if (verticalRaw != 0 || horizontalRaw != 0)
         {
             walking = true;
@@ -158,17 +165,21 @@ public class PlayerController : MonoBehaviour
         controller.Move(forwardDirection * verticalInput * movingSpeed * Time.deltaTime);
         controller.Move(strafeDirection * horizontalInput * movingSpeed * Time.deltaTime);
 
-        if (walking && !running && !crouch && !vault)
+        if (walking && !running && !crouch && !vaulting)
         {
             movingSpeed = walkingpeed;
         }
-        else if (walking && running && !crouch && !vault)
+        else if (walking && running && !crouch && !vaulting)
         {
             movingSpeed = runningSpeed;
         }
-        else if (crouch && !running && !vault)
+        else if (crouch && !running && !vaulting)
         {
             movingSpeed = crouchSpeed;
+        }
+        else if (vaulting)
+        {
+            movingSpeed = 0;
         }
     }
 
@@ -322,16 +333,12 @@ public class PlayerController : MonoBehaviour
                 controller.height = crouchingHeight;
             }
         }
-
-        if (walking && !aiming)
-        {
-            vaultDireciton = new Vector3(Mathf.RoundToInt(nonAimModelDirection.x), 0, Mathf.RoundToInt(nonAimModelDirection.z));
-        }
     }
 
     IEnumerator VaultRoutine()
     {
         vault = true;
+        vaulting = true;
         controller.excludeLayers = obsLayerSet.value;
         float timeE = 0;
         float duration = 1.11f;
@@ -341,7 +348,6 @@ public class PlayerController : MonoBehaviour
 
         while (timeE < duration)
         {
-            movingSpeed = 0;
             transform.position = Vector3.Lerp(start, destination, timeE / duration);
             timeE += Time.deltaTime;
             yield return null;
@@ -349,7 +355,7 @@ public class PlayerController : MonoBehaviour
 
         transform.position = destination;
         controller.excludeLayers = 0;
-
+        vaulting = false;
     }
 
     private LayerMask obsLayerSet
@@ -363,6 +369,6 @@ public class PlayerController : MonoBehaviour
 
     private LayerMask obstacleLayer = 1 << 6;
     [SerializeField] private float vaultDistanceMultiplier = 1.05f;
-
+    [SerializeField] private bool vaulting;
     [SerializeField] private Vector3 vaultDireciton;
 }
