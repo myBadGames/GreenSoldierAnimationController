@@ -93,21 +93,21 @@ public class PlayerController : MonoBehaviour
     private void MovementInput()
     {
         verticalInput = Input.GetAxis("Vertical");
-        horizontalInput = Input.GetAxis("Horizontal");
-
-        if (verticalInput != 0 || horizontalInput != 0)
+        horizontalInput = Input.GetAxis("Horizontal");        
+        float verticalRaw = Input.GetAxisRaw("Vertical");
+        float horizontalRaw = Input.GetAxisRaw("Horizontal");
+        if (verticalRaw != 0 || horizontalRaw != 0)
         {
             walking = true;
         }
-        else if (verticalInput != 0 && horizontalInput != 0)
+        else if (verticalRaw != 0 && horizontalRaw != 0)
         {
             walking = true;
         }
-        else if (verticalInput == 0 && horizontalInput == 0)
+        else if (verticalRaw == 0 && horizontalRaw == 0)
         {
             walking = false;
         }
-
         if (Input.GetKey(KeyCode.LeftShift) && walking && !aiming)
         {
             running = true;
@@ -135,7 +135,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > vaultTime && !aiming)
         {
             vaultTime = Time.time + 1 / vaultRate;
-            vault = true;
+            StartCoroutine(VaultRoutine());
         }
 
         if (vault)
@@ -158,15 +158,15 @@ public class PlayerController : MonoBehaviour
         controller.Move(forwardDirection * verticalInput * movingSpeed * Time.deltaTime);
         controller.Move(strafeDirection * horizontalInput * movingSpeed * Time.deltaTime);
 
-        if (walking && !running && !crouch)
+        if (walking && !running && !crouch && !vault)
         {
             movingSpeed = walkingpeed;
         }
-        else if (walking && running && !crouch)
+        else if (walking && running && !crouch && !vault)
         {
             movingSpeed = runningSpeed;
         }
-        else if (crouch && !running)
+        else if (crouch && !running && !vault)
         {
             movingSpeed = crouchSpeed;
         }
@@ -322,5 +322,47 @@ public class PlayerController : MonoBehaviour
                 controller.height = crouchingHeight;
             }
         }
+
+        if (walking && !aiming)
+        {
+            vaultDireciton = new Vector3(Mathf.RoundToInt(nonAimModelDirection.x), 0, Mathf.RoundToInt(nonAimModelDirection.z));
+        }
     }
+
+    IEnumerator VaultRoutine()
+    {
+        vault = true;
+        controller.excludeLayers = obsLayerSet.value;
+        float timeE = 0;
+        float duration = 1.11f;
+
+        Vector3 start = transform.position;
+        Vector3 destination = start + 2 * vaultDistanceMultiplier * vaultDireciton;
+
+        while (timeE < duration)
+        {
+            movingSpeed = 0;
+            transform.position = Vector3.Lerp(start, destination, timeE / duration);
+            timeE += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.position = destination;
+        controller.excludeLayers = 0;
+
+    }
+
+    private LayerMask obsLayerSet
+    {
+        get { return obstacleLayer; }
+        set
+        {
+            obstacleLayer = value;
+        }
+    }
+
+    private LayerMask obstacleLayer = 1 << 6;
+    [SerializeField] private float vaultDistanceMultiplier = 1.05f;
+
+    [SerializeField] private Vector3 vaultDireciton;
 }
