@@ -158,7 +158,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > vaultTime && !aiming && obstacle != null && vaultReady && obstacleInFront)
         {
             vaultTime = Time.time + 1 / vaultRate;
-            StartCoroutine(VaultRoutineUp(walking, running));
+            StartCoroutine(VaultRoutineUp());
         }
 
         if (vault)
@@ -351,7 +351,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    IEnumerator VaultRoutineUp(bool walking, bool running)
+    IEnumerator VaultRoutineUp()
     {
         vault = true;
         vaulting = true;
@@ -385,7 +385,7 @@ public class PlayerController : MonoBehaviour
 
         transform.position = start;
         modelZ = modelZStart;
-        StartCoroutine(VaultRoutineDown(walking, running, start, destination));
+        StartCoroutine(VaultRoutineDown(start, destination));
     }
 
     private LayerMask obsLayerSet
@@ -397,22 +397,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    IEnumerator VaultRoutineDown(bool walking, bool running, Vector3 start, Vector3 destination)
+    IEnumerator VaultRoutineDown( Vector3 start, Vector3 destination)
     {
         float timeE = 0;
-        float duration;
-        if (walking && !running)
-        {
-            duration = 1.15f - 0.3f;
-        }
-        else if (running && walking)
-        {
-            duration = 1.08f - 0.3f;
-        }
-        else
-        {
-            duration = 1.15f - 0.3f;
-        }
+        float duration = 1.15f - 0.3f; 
 
         while (timeE < duration)
         {
