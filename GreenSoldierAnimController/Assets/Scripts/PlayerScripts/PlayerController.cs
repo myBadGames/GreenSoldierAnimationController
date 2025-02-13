@@ -69,14 +69,14 @@ public class PlayerController : MonoBehaviour
     private LayerMask obstacleLayer = 1 << 6;
     [SerializeField] private bool vaulting;
     [SerializeField] private GameObject obstacle;
-    [SerializeField] private BoxCollider obstacleCollider;
+    private BoxCollider obstacleCollider;
     [SerializeField] private float distanceToObstacle;
     [SerializeField] private float distanceToObstacleLim;
     [SerializeField] private float distanceToVault;
-    [SerializeField] private float distanceToVaultMultiplier = 1.3f;
+     private float distanceToVaultMultiplier = 1.3f;
     [SerializeField] private bool vaultReady;
     [SerializeField] private float modelZ;
-    [SerializeField] private float modelZStart = -40.0f;
+     private float modelZStart = -40.0f;
     [SerializeField] private float dot;
     [SerializeField] private float dot2;
     [SerializeField] private float vaultingY;
@@ -369,9 +369,6 @@ public class PlayerController : MonoBehaviour
 
         Vector3 start = new Vector3(obstacle.transform.position.x + .58f * - directionMultiplier, transform.position.y, obstacle.transform.position.z - 1.1f * directionMultiplier);
         Vector3 destination = new Vector3(obstacle.transform.position.x - .58f , transform.position.y, obstacle.transform.position.z + 1.1f * directionMultiplier);
-
-        Debug.Log(start);
-        Debug.Log(destination);
 
         float timeE = 0;
         float duration = 0.3f;
