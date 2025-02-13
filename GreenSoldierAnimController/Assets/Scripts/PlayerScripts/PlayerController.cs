@@ -66,7 +66,24 @@ public class PlayerController : MonoBehaviour
     private float colliderLerpDuration = 0.1123f;
     [SerializeField] private float colliderLerpTime;
 
-
+    private LayerMask obstacleLayer = 1 << 6;
+    [SerializeField] private bool vaulting;
+    [SerializeField] private GameObject obstacle;
+    [SerializeField] private BoxCollider obstacleCollider;
+    [SerializeField] private float distanceToObstacle;
+    [SerializeField] private float distanceToObstacleLim;
+    [SerializeField] private float distanceToVault;
+    [SerializeField] private float distanceToVaultMultiplier = 1.3f;
+    [SerializeField] private bool vaultReady;
+    [SerializeField] private float modelZ;
+    [SerializeField] private float modelZStart = -40.0f;
+    [SerializeField] private float dot;
+    [SerializeField] private float dot2;
+    [SerializeField] private float vaultingY;
+    [SerializeField] private float randomMultiplier;
+    [SerializeField] private float directionMultiplier;
+    [SerializeField] private bool obstacleInFront;
+    [SerializeField] private CheckFront checkFront;
 
     private void Start()
     {
@@ -468,23 +485,4 @@ public class PlayerController : MonoBehaviour
             obstacle = hit.gameObject;
         }
     }
-
-    private LayerMask obstacleLayer = 1 << 6;
-    [SerializeField] private bool vaulting;
-    [SerializeField] private GameObject obstacle;
-    [SerializeField] private BoxCollider obstacleCollider;
-    [SerializeField] private float distanceToObstacle;
-    [SerializeField] private float distanceToObstacleLim;
-    [SerializeField] private float distanceToVault;
-    [SerializeField] private float distanceToVaultMultiplier = 1.3f;
-    [SerializeField] private bool vaultReady;
-    [SerializeField] private float modelZ;
-    [SerializeField] private float modelZStart = -40.0f;
-    [SerializeField] private float dot;
-    [SerializeField] private float dot2;
-    [SerializeField] private float vaultingY;
-    [SerializeField] private float randomMultiplier;
-    [SerializeField] private float directionMultiplier;
-    [SerializeField] private bool obstacleInFront;
-    [SerializeField] private CheckFront checkFront;
 }
