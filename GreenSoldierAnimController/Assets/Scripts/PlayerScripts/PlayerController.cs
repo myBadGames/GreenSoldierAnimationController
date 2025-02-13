@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float xRotationLimit = 45.0f;
 
     [SerializeField] private Vector3 nonAimModelDirection;
-    [SerializeField] private Quaternion modelDirection;
+    [SerializeField] private Quaternion modelAngles;
     [SerializeField] private float modelY;
     [SerializeField] private Vector3 modelEulerAngles;
     [SerializeField] private float modelRotationSpeed = 5.0f;
@@ -66,10 +66,7 @@ public class PlayerController : MonoBehaviour
     private float colliderLerpDuration = 0.1123f;
     [SerializeField] private float colliderLerpTime;
 
-    private LayerMask obstacleLayer = 1 << 6;
-    [SerializeField] private float vaultDistanceMultiplier = 1.05f;
-    [SerializeField] private bool vaulting;
-    [SerializeField] private Vector3 vaultDirection;
+
 
     private void Start()
     {
@@ -80,6 +77,7 @@ public class PlayerController : MonoBehaviour
         compass = transform.GetChild(2);
         impulseSource = GetComponent<CinemachineImpulseSource>();
         colliderLerpTime = colliderLerpDuration;
+        modelZ = 0;
     }
 
     private void Update()
@@ -93,17 +91,13 @@ public class PlayerController : MonoBehaviour
         AttackControl();
         ModelRotation();
         ModelPosition();
-
-        if (walking)
-        {
-            vaultDirection = new Vector3(Mathf.RoundToInt(nonAimModelDirection.x), 0, Mathf.RoundToInt(nonAimModelDirection.z));
-        }
+        ObstacleCollision();
     }
 
     private void MovementInput()
     {
         verticalInput = Input.GetAxis("Vertical");
-        horizontalInput = Input.GetAxis("Horizontal");        
+        horizontalInput = Input.GetAxis("Horizontal");
 
         float verticalRaw = Input.GetAxisRaw("Vertical");
         float horizontalRaw = Input.GetAxisRaw("Horizontal");
@@ -144,10 +138,10 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.Space) && Time.time > vaultTime && !aiming)
+        if (Input.GetKeyDown(KeyCode.Space) && Time.time > vaultTime && !aiming && obstacle != null && vaultReady && obstacleInFront)
         {
             vaultTime = Time.time + 1 / vaultRate;
-            StartCoroutine(VaultRoutine());
+            StartCoroutine(VaultRoutineUp(walking, running));
         }
 
         if (vault)
@@ -251,8 +245,8 @@ public class PlayerController : MonoBehaviour
                 aiming = false;
             }
         }
-    }    
-    
+    }
+
     private void AttackControl()
     {
         if (aiming)
@@ -262,7 +256,7 @@ public class PlayerController : MonoBehaviour
                 fireTime = Time.time + 1 / fireRate;
                 animatorControl.ShootTrig();
 
-                if (forwardDirection.z >= 0.95f || forwardDirection.z <= -0.95) 
+                if (forwardDirection.z >= 0.95f || forwardDirection.z <= -0.95)
                 {
                     impulseDirection = forwardDirection;
                 }
@@ -284,22 +278,22 @@ public class PlayerController : MonoBehaviour
 
             if (nonAimModelDirection != Vector3.zero)
             {
-                modelDirection = Quaternion.LookRotation(nonAimModelDirection, Vector3.up);
+                modelAngles = Quaternion.LookRotation(nonAimModelDirection, Vector3.up);
             }
         }
         else
         {
-            modelDirection = Quaternion.LookRotation(forwardDirection, Vector3.up);
+            modelAngles = Quaternion.LookRotation(forwardDirection, Vector3.up);
         }
 
-        modelEulerAngles = modelDirection.eulerAngles;
+        modelEulerAngles = modelAngles.eulerAngles;
         modelY = Mathf.LerpAngle(modelY, modelEulerAngles.y, Time.deltaTime * modelRotationSpeed);
-        soldierModel.localRotation = Quaternion.Euler(0, modelY, 0);
+        soldierModel.localRotation = Quaternion.Euler(0, modelY, modelZ);
     }
 
     private void ModelPosition()
     {
-        if (!vault)
+        if (!vault && !vaulting)
         {
             if (soldierModel.localPosition != Vector3.zero)
             {
@@ -340,27 +334,41 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    IEnumerator VaultRoutine()
+    IEnumerator VaultRoutineUp(bool walking, bool running)
     {
         vault = true;
         vaulting = true;
         controller.excludeLayers = obsLayerSet.value;
+        Vector3 trueStart = transform.position;
+
+        if (dot > 0)
+        {
+            directionMultiplier = 1;
+        }
+        else
+        {
+            directionMultiplier = -1;
+        }
+
+        Vector3 start = new Vector3(obstacle.transform.position.x + .58f * - directionMultiplier, transform.position.y, obstacle.transform.position.z - 1.1f * directionMultiplier);
+        Vector3 destination = new Vector3(obstacle.transform.position.x - .58f , transform.position.y, obstacle.transform.position.z + 1.1f * directionMultiplier);
+
+        Debug.Log(start);
+        Debug.Log(destination);
+
         float timeE = 0;
-        float duration = 1.11f;
-
-        Vector3 start = transform.position;
-        Vector3 destination = start + 2 * vaultDistanceMultiplier * vaultDirection;
-
+        float duration = 0.3f;
         while (timeE < duration)
         {
-            transform.position = Vector3.Lerp(start, destination, timeE / duration);
+            transform.position = Vector3.Lerp(trueStart, start, timeE / duration);
+            modelZ = Mathf.Lerp(0, modelZStart, timeE / duration);
             timeE += Time.deltaTime;
             yield return null;
         }
 
-        transform.position = destination;
-        controller.excludeLayers = 0;
-        vaulting = false;
+        transform.position = start;
+        modelZ = modelZStart;
+        StartCoroutine(VaultRoutineDown(walking, running, start, destination));
     }
 
     private LayerMask obsLayerSet
@@ -371,4 +379,112 @@ public class PlayerController : MonoBehaviour
             obstacleLayer = value;
         }
     }
+
+    IEnumerator VaultRoutineDown(bool walking, bool running, Vector3 start, Vector3 destination)
+    {
+        float timeE = 0;
+        float duration;
+        if (walking && !running)
+        {
+            duration = 1.15f - 0.3f;
+        }
+        else if (running && walking)
+        {
+            duration = 1.08f - 0.3f;
+        }
+        else
+        {
+            duration = 1.15f - 0.3f;
+        }
+
+        while (timeE < duration)
+        {
+            transform.position = Vector3.Lerp(start, destination, timeE / duration);
+            transform.position = transform.position + new Vector3(0, vaultingY, 0);
+            float x = transform.position.z - obstacle.transform.position.z;
+            vaultingY = -0.7936f * Mathf.Pow(x, 2) - 0.0482f * (x) + 0.8886f;
+            modelZ = Mathf.Lerp(modelZStart, 0, timeE / duration);
+            timeE += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.position = destination;
+        modelZ = 0;
+        controller.excludeLayers = 0;
+        vaulting = false;
+    }
+
+    private void ObstacleCollision()
+    {
+        if (obstacle != null)
+        {
+            obstacleCollider = obstacle.GetComponent<BoxCollider>();
+
+            obstacleInFront = checkFront.occupied;
+
+            if (obstacleCollider.size.x > obstacleCollider.size.z)
+            {
+                distanceToObstacleLim = obstacleCollider.size.x * 0.77f;
+            }
+            else
+            {
+                distanceToObstacleLim = obstacleCollider.size.z * 0.77f;
+            }
+
+            distanceToVault = obstacleCollider.size.z * distanceToVaultMultiplier;
+
+            dot = Vector3.Dot(obstacle.transform.forward, soldierModel.transform.forward);
+            dot2 = Vector3.Dot(-obstacle.transform.forward, soldierModel.transform.forward);
+
+            if (distanceToObstacle <= distanceToVault && dot == -dot2)
+            {
+                vaultReady = true;
+            }
+            else
+            {
+                vaultReady = false;
+            }
+
+            distanceToObstacle = Vector3.Distance(transform.position - new Vector3(0, transform.position.y, 0), obstacle.transform.position - new Vector3(0, obstacle.transform.position.y, 0));
+
+            if (distanceToObstacle >= distanceToObstacleLim && !vaulting)
+            {
+                obstacle = null;
+            }
+        }
+        else
+        {
+            distanceToObstacle = 0;
+            obstacleCollider = null;
+            distanceToObstacleLim = 0;
+            vaultReady = false;
+        }
+    }
+
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if (hit.gameObject.CompareTag("Obstacles"))
+        {
+            obstacle = hit.gameObject;
+        }
+    }
+
+    private LayerMask obstacleLayer = 1 << 6;
+    [SerializeField] private bool vaulting;
+    [SerializeField] private GameObject obstacle;
+    [SerializeField] private BoxCollider obstacleCollider;
+    [SerializeField] private float distanceToObstacle;
+    [SerializeField] private float distanceToObstacleLim;
+    [SerializeField] private float distanceToVault;
+    [SerializeField] private float distanceToVaultMultiplier = 1.3f;
+    [SerializeField] private bool vaultReady;
+    [SerializeField] private float modelZ;
+    [SerializeField] private float modelZStart = -40.0f;
+    [SerializeField] private float dot;
+    [SerializeField] private float dot2;
+    [SerializeField] private float vaultingY;
+    [SerializeField] private float randomMultiplier;
+    [SerializeField] private float directionMultiplier;
+    [SerializeField] private bool obstacleInFront;
+    [SerializeField] private CheckFront checkFront;
 }
