@@ -73,17 +73,18 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float distanceToObstacle;
     [SerializeField] private float distanceToObstacleLim;
     [SerializeField] private float distanceToVault;
-     private float distanceToVaultMultiplier = 1.3f;
+    private float distanceToVaultMultiplier = 1.3f;
     [SerializeField] private bool vaultReady;
     [SerializeField] private float modelZ;
-     private float modelZStart = -40.0f;
+    private float modelZStart = -40.0f;
     [SerializeField] private float dot;
     [SerializeField] private float dot2;
     [SerializeField] private float vaultingY;
-    [SerializeField] private float randomMultiplier;
-    [SerializeField] private float directionMultiplier;
     [SerializeField] private bool obstacleInFront;
     [SerializeField] private CheckFront checkFront;
+    [SerializeField] private Vector3 start;
+    [SerializeField] private Vector3 destination;
+    private Vector3 obstacleChildOffset = new Vector3(0, 0.6f, 0);
 
     private void Start()
     {
@@ -131,7 +132,7 @@ public class PlayerController : MonoBehaviour
         {
             walking = false;
         }
-        if (Input.GetKey(KeyCode.LeftShift) && walking && !aiming)
+        if (Input.GetKey(KeyCode.LeftShift) && walking && !aiming && !vaulting)
         {
             running = true;
             crouch = false;
@@ -141,7 +142,7 @@ public class PlayerController : MonoBehaviour
             running = false;
         }
 
-        if (Input.GetKeyDown(KeyCode.C) && !running)
+        if (Input.GetKeyDown(KeyCode.C) && !running && !vaulting)
         {
             if (crouch)
             {
@@ -178,8 +179,11 @@ public class PlayerController : MonoBehaviour
         forwardDirection = compass.forward.normalized;
         strafeDirection = compass.right.normalized;
 
-        controller.Move(forwardDirection * verticalInput * movingSpeed * Time.deltaTime);
-        controller.Move(strafeDirection * horizontalInput * movingSpeed * Time.deltaTime);
+        if (!vaulting)
+        {
+            controller.Move(forwardDirection * verticalInput * movingSpeed * Time.deltaTime);
+            controller.Move(strafeDirection * horizontalInput * movingSpeed * Time.deltaTime);
+        }
 
         if (walking && !running && !crouch && !vaulting)
         {
@@ -251,7 +255,7 @@ public class PlayerController : MonoBehaviour
 
     private void AimControl()
     {
-        if (Input.GetButton("Fire2") && !running)
+        if (Input.GetButton("Fire2") && !running && !vaulting) 
         {
             aiming = true;
         }
@@ -291,11 +295,14 @@ public class PlayerController : MonoBehaviour
     {
         if (!aiming)
         {
-            nonAimModelDirection = forwardDirection * verticalInput + strafeDirection * horizontalInput;
-
-            if (nonAimModelDirection != Vector3.zero)
+            if (!vaulting)
             {
-                modelAngles = Quaternion.LookRotation(nonAimModelDirection, Vector3.up);
+                nonAimModelDirection = forwardDirection * verticalInput + strafeDirection * horizontalInput;
+
+                if (nonAimModelDirection != Vector3.zero)
+                {
+                    modelAngles = Quaternion.LookRotation(nonAimModelDirection, Vector3.up);
+                }
             }
         }
         else
@@ -357,21 +364,26 @@ public class PlayerController : MonoBehaviour
         vaulting = true;
         controller.excludeLayers = obsLayerSet.value;
         Vector3 trueStart = transform.position;
+        Transform obstacleChild;
 
         if (dot > 0)
         {
-            directionMultiplier = 1;
+            start = obstacle.transform.GetChild(obstacle.transform.childCount - 4).transform.position;
+            obstacleChild = obstacle.transform.GetChild(obstacle.transform.childCount - 3).transform;
+
         }
         else
         {
-            directionMultiplier = -1;
+            start = obstacle.transform.GetChild(obstacle.transform.childCount - 2).transform.position;
+            obstacleChild = obstacle.transform.GetChild(obstacle.transform.childCount -1).transform;
         }
 
-        Vector3 start = new Vector3(obstacle.transform.position.x + .58f * - directionMultiplier, transform.position.y, obstacle.transform.position.z - 1.1f * directionMultiplier);
-        Vector3 destination = new Vector3(obstacle.transform.position.x - .58f , transform.position.y, obstacle.transform.position.z + 1.1f * directionMultiplier);
+        obstacleChild.localPosition -= obstacleChildOffset;
+        destination = obstacleChild.transform.position;
 
         float timeE = 0;
         float duration = 0.3f;
+
         while (timeE < duration)
         {
             transform.position = Vector3.Lerp(trueStart, start, timeE / duration);
@@ -382,7 +394,7 @@ public class PlayerController : MonoBehaviour
 
         transform.position = start;
         modelZ = modelZStart;
-        StartCoroutine(VaultRoutineDown(start, destination));
+        StartCoroutine(VaultRoutineDown(obstacleChild));
     }
 
     private LayerMask obsLayerSet
@@ -394,17 +406,16 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    IEnumerator VaultRoutineDown( Vector3 start, Vector3 destination)
+    IEnumerator VaultRoutineDown(Transform obstacleChild)
     {
         float timeE = 0;
-        float duration = 1.15f - 0.3f; 
+        float duration = 1.11f - .3f;
 
         while (timeE < duration)
         {
             transform.position = Vector3.Lerp(start, destination, timeE / duration);
             transform.position = transform.position + new Vector3(0, vaultingY, 0);
-            float x = transform.position.z - obstacle.transform.position.z;
-            vaultingY = -0.7936f * Mathf.Pow(x, 2) - 0.0482f * (x) + 0.8886f;
+            vaultingY = -5.2917f * (timeE * timeE) + 4.2483f * timeE - 0.006f; //y = -5.3333x2 + 4.3567x - 0.036 \\\\ y = -5.2917x2 + 4.2483x - 0.006
             modelZ = Mathf.Lerp(modelZStart, 0, timeE / duration);
             timeE += Time.deltaTime;
             yield return null;
@@ -414,6 +425,8 @@ public class PlayerController : MonoBehaviour
         modelZ = 0;
         controller.excludeLayers = 0;
         vaulting = false;
+
+        obstacleChild.localPosition += obstacleChildOffset;
     }
 
     private void ObstacleCollision()
@@ -467,7 +480,10 @@ public class PlayerController : MonoBehaviour
     {
         if (hit.gameObject.CompareTag("Obstacles"))
         {
-            obstacle = hit.gameObject;
+            if (obstacle == null)
+            {
+                obstacle = hit.gameObject;
+            }
         }
     }
 }

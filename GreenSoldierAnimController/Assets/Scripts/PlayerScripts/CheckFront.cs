@@ -6,10 +6,16 @@ public class CheckFront : MonoBehaviour
 {
     public bool occupied;
     [SerializeField] private Transform soldier;
+    private Vector3 localOffset = new Vector3(0, 0.72f, 0.5f);
 
-    private void Update()
+    void Update()
     {
-        transform.position = soldier.transform.position; 
+        Quaternion yRotationOnly = Quaternion.Euler(0, soldier.eulerAngles.y, 0);
+
+        transform.position = soldier.position + yRotationOnly * localOffset;
+
+        transform.rotation = yRotationOnly;
+
     }
     private void OnTriggerEnter(Collider other)
     {
