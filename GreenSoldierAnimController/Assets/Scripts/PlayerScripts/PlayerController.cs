@@ -87,6 +87,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Vector3 destination;
     private Vector3 obstacleChildOffset = new Vector3(0, 0.6f, 0);
 
+    public bool reload;
+    [SerializeField] private float reloadTimer = 1.15f;
+    public int bulletCount;
+    public bool shootB;
     [SerializeField] private float recoil = 3.0f;
 
     private void Start()
@@ -100,6 +104,7 @@ public class PlayerController : MonoBehaviour
         impulseSource = GetComponent<CinemachineImpulseSource>();
         colliderLerpTime = colliderLerpDuration;
         modelZ = 0;
+        bulletCount = 8;
     }
 
     private void Update()
@@ -111,6 +116,7 @@ public class PlayerController : MonoBehaviour
         ColliderControl();
         AimControl();
         AttackControl();
+        Reload();
         ModelRotation();
         ModelPosition();
         ObstacleCollision();
@@ -259,7 +265,7 @@ public class PlayerController : MonoBehaviour
 
     private void AimControl()
     {
-        if (Input.GetButton("Fire2") && !running && !vaulting) 
+        if (Input.GetButton("Fire2") && !running && !vaulting && !reload) 
         {
             aiming = true;
 
@@ -277,17 +283,16 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public bool shootB;
-
     private void AttackControl()
     {
         if (aiming)
         {
-            if (Input.GetButtonDown("Fire1") && Time.time > fireTime)
+            if (Input.GetButtonDown("Fire1") && Time.time > fireTime && bulletCount > 0 && !reload)
             {
                 fireTime = Time.time + 1 / fireRate;
                 shootB = true;
                 targetX -= recoil;
+                bulletCount--;
 
                 if (forwardDirection.z >= 0.95f || forwardDirection.z <= -0.95)
                 {
@@ -309,6 +314,22 @@ public class PlayerController : MonoBehaviour
                 shootB = false;
             }
         }
+    }
+
+    private void Reload()
+    {
+        if (Input.GetKeyDown(KeyCode.R) && bulletCount < 8 && !shootB && !reload) 
+        {
+            StartCoroutine(ReloadRoutine());
+        }
+    }
+
+    IEnumerator ReloadRoutine()
+    {
+        reload = true;
+        yield return new WaitForSeconds(reloadTimer);
+        reload = false;
+        bulletCount = 8;
     }
 
     private void ModelRotation()

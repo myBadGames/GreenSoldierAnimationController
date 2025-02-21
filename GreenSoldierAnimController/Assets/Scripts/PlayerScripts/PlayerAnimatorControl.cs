@@ -26,7 +26,6 @@ public class PlayerAnimatorControl : MonoBehaviour
     [SerializeField] private bool crouchB;
     [SerializeField] private bool vault;
 
-
     void Start()
     {
         playerController = GetComponent<PlayerController>();
@@ -52,6 +51,7 @@ public class PlayerAnimatorControl : MonoBehaviour
         animator.SetFloat("Body_Vertical_f", bodyVertical);
         animator.SetFloat("Body_Horizontal_f", bodyHorizontal);
         animator.SetFloat("Head_Horizontal_f", headHorizontal);
+        animator.SetBool("Reload_b", playerController.reload);
 
         shootB = playerController.shootB;
 

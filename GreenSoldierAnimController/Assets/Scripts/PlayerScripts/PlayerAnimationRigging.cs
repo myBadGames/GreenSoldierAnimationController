@@ -34,13 +34,24 @@ public class PlayerAnimationRigging : MonoBehaviour
             if (!playerController.aiming)
             {
                 idleWeightTarget = 1.01f;
+                aimWeightTarget = -0.01f;
             }
-            else
+            else if (playerController.aiming)
             {
+                aimWeightTarget = 1.01f;
                 idleWeightTarget = -0.01f;
             }
 
-            idleWeight = Mathf.Lerp(idleWeight, idleWeightTarget, Time.deltaTime * lerpSpeed);
+            if (!playerController.reload)
+            {
+                idleWeight = Mathf.Lerp(idleWeight, idleWeightTarget, Time.deltaTime * lerpSpeed);
+                aimWeight = Mathf.Lerp(aimWeight, aimWeightTarget, Time.deltaTime * lerpSpeed);
+            }
+            else
+            {
+                idleWeight = 0;
+                aimWeight = 0;
+            }
         }
     }
 }

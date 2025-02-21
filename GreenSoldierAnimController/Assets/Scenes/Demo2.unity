@@ -5664,6 +5664,7 @@ MonoBehaviour:
   aim: {fileID: 2130030009}
   aimWeight: 0
   aimWeightTarget: 0
+  firstAim: 0
 --- !u!4 &1941980550 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3754538795964690796, guid: 427587d9b114d964f85be6c567e6050b,
@@ -6128,6 +6129,11 @@ PrefabInstance:
       propertyPath: mainCamera
       value: 
       objectReference: {fileID: 1823658537}
+    - target: {fileID: 186366210302156564, guid: 427587d9b114d964f85be6c567e6050b,
+        type: 3}
+      propertyPath: reloadTimer
+      value: 1.485
+      objectReference: {fileID: 0}
     - target: {fileID: 186366210302156564, guid: 427587d9b114d964f85be6c567e6050b,
         type: 3}
       propertyPath: aimCamCrouch
