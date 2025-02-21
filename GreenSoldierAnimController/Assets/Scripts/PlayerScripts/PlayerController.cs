@@ -263,10 +263,12 @@ public class PlayerController : MonoBehaviour
         {
             if (aiming)
             {
-                aiming = false;
+               aiming = false;
             }
         }
     }
+
+    public bool shootB;
 
     private void AttackControl()
     {
@@ -275,7 +277,7 @@ public class PlayerController : MonoBehaviour
             if (Input.GetButtonDown("Fire1") && Time.time > fireTime)
             {
                 fireTime = Time.time + 1 / fireRate;
-                animatorControl.ShootTrig();
+                shootB = true;
 
                 if (forwardDirection.z >= 0.95f || forwardDirection.z <= -0.95)
                 {
@@ -287,6 +289,14 @@ public class PlayerController : MonoBehaviour
                 }
 
                 impulseSource.GenerateImpulse(impulseDirection);
+            }
+        }
+
+        if (shootB)
+        {
+            if (Time.time > fireTime)
+            {
+                shootB = false;
             }
         }
     }
