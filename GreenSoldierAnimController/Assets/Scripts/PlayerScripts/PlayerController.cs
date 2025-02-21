@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
 {
     private CharacterController controller;
     private PlayerAnimatorControl animatorControl;
+    private PlayerAnimationRigging animationRigging;
     private Transform soldierModel;
     public bool walking;
     public bool running;
@@ -86,10 +87,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Vector3 destination;
     private Vector3 obstacleChildOffset = new Vector3(0, 0.6f, 0);
 
+    [SerializeField] private float recoil = 3.0f;
+
     private void Start()
     {
         controller = GetComponent<CharacterController>();
         animatorControl = GetComponent<PlayerAnimatorControl>();
+        animationRigging = GetComponent<PlayerAnimationRigging>();
         soldierModel = transform.GetChild(0);
         focalPoint = transform.GetChild(1);
         compass = transform.GetChild(2);
@@ -258,6 +262,11 @@ public class PlayerController : MonoBehaviour
         if (Input.GetButton("Fire2") && !running && !vaulting) 
         {
             aiming = true;
+
+            if (!animationRigging.firstAim)
+            {
+                animationRigging.firstAim = true;
+            }
         }
         if (Input.GetButtonUp("Fire2"))
         {
@@ -278,6 +287,7 @@ public class PlayerController : MonoBehaviour
             {
                 fireTime = Time.time + 1 / fireRate;
                 shootB = true;
+                targetX -= recoil;
 
                 if (forwardDirection.z >= 0.95f || forwardDirection.z <= -0.95)
                 {

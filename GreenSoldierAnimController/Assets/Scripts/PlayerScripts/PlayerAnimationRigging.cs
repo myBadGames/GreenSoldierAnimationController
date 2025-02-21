@@ -13,28 +13,34 @@ public class PlayerAnimationRigging : MonoBehaviour
     [SerializeField] private Rig aim;
     [SerializeField] private float aimWeight;
     [SerializeField] private float aimWeightTarget;
+    public bool firstAim;
+
 
     void Start()
     {
         playerController = GetComponent<PlayerController>();
+        firstAim = false;
         idleWeightTarget = 1.01f;
     }
 
     void Update()
     {
-        idle.weight = idleWeight;
-        aim.weight = aimWeight;
-        aimWeight = -idleWeight + 1;
-
-        if (!playerController.aiming)
+        if (firstAim)
         {
-            idleWeightTarget = 1.01f;
-        }
-        else
-        {
-            idleWeightTarget = -0.01f;
-        }
+            idle.weight = idleWeight;
+            aim.weight = aimWeight;
+            aimWeight = -idleWeight + 1;
 
-        idleWeight = Mathf.Lerp(idleWeight, idleWeightTarget, Time.deltaTime * lerpSpeed);
+            if (!playerController.aiming)
+            {
+                idleWeightTarget = 1.01f;
+            }
+            else
+            {
+                idleWeightTarget = -0.01f;
+            }
+
+            idleWeight = Mathf.Lerp(idleWeight, idleWeightTarget, Time.deltaTime * lerpSpeed);
+        }
     }
 }
