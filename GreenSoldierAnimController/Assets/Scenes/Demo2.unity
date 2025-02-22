@@ -6769,7 +6769,7 @@ PrefabInstance:
     - target: {fileID: 186366210302156564, guid: 427587d9b114d964f85be6c567e6050b,
         type: 3}
       propertyPath: reloadTimer
-      value: 1.485
+      value: 1.55
       objectReference: {fileID: 0}
     - target: {fileID: 186366210302156564, guid: 427587d9b114d964f85be6c567e6050b,
         type: 3}
