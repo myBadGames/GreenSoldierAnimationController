@@ -93,6 +93,9 @@ public class PlayerController : MonoBehaviour
     public bool shootB;
     [SerializeField] private float recoil = 3.0f;
 
+    [SerializeField] private Transform clips;
+    [SerializeField] private float clipTime = 0.35f;
+
     private void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -327,7 +330,17 @@ public class PlayerController : MonoBehaviour
     IEnumerator ReloadRoutine()
     {
         reload = true;
-        yield return new WaitForSeconds(reloadTimer);
+        yield return new WaitForSeconds(clipTime);
+        for (int i = 0; i < clips.childCount - 1; i++)
+        {
+            if (!clips.GetChild(i).gameObject.activeInHierarchy)
+            {
+                clips.GetChild(i).GetComponent<Clip>().pushDirection = strafeDirection;
+                clips.GetChild(i).gameObject.SetActive(true);
+                break;
+            }
+        }
+        yield return new WaitForSeconds(reloadTimer - clipTime);
         reload = false;
         bulletCount = 8;
     }
