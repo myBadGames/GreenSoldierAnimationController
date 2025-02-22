@@ -335,7 +335,7 @@ public class PlayerController : MonoBehaviour
         {
             if (!clips.GetChild(i).gameObject.activeInHierarchy)
             {
-                clips.GetChild(i).GetComponent<Clip>().pushDirection = strafeDirection;
+                clips.GetChild(i).GetComponent<Clip>().pushDirection = soldierModel.transform.right;
                 clips.GetChild(i).gameObject.SetActive(true);
                 break;
             }
