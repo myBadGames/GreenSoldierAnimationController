@@ -14,7 +14,10 @@ public class PlayerAnimationRigging : MonoBehaviour
     [SerializeField] private float aimWeight;
     [SerializeField] private float aimWeightTarget;
     public bool firstAim;
-
+    [SerializeField] private float reloadTime;
+    [SerializeField] private float reloadDuration = 0.25f;
+    [SerializeField] private float idleWeightClone;
+    [SerializeField] private float aimWeightClone;
 
     void Start()
     {
@@ -29,28 +32,40 @@ public class PlayerAnimationRigging : MonoBehaviour
         {
             idle.weight = idleWeight;
             aim.weight = aimWeight;
-            aimWeight = -idleWeight + 1;
-
-            if (!playerController.aiming)
-            {
-                idleWeightTarget = 1.01f;
-                aimWeightTarget = -0.01f;
-            }
-            else if (playerController.aiming)
-            {
-                aimWeightTarget = 1.01f;
-                idleWeightTarget = -0.01f;
-            }
 
             if (!playerController.reload)
             {
+                if (!playerController.aiming)
+                {
+                    idleWeightTarget = 1.01f;
+                    aimWeightTarget = -0.01f;
+                }
+                else if (playerController.aiming)
+                {
+                    idleWeightTarget = -0.01f;
+                    aimWeightTarget = 1.01f;
+
+                }
+
                 idleWeight = Mathf.Lerp(idleWeight, idleWeightTarget, Time.deltaTime * lerpSpeed);
                 aimWeight = Mathf.Lerp(aimWeight, aimWeightTarget, Time.deltaTime * lerpSpeed);
+                reloadTime = 0.0f;
+                idleWeightClone = idleWeight;
+                aimWeightClone = aimWeight;
             }
             else
             {
-                idleWeight = 0;
-                aimWeight = 0;
+                if (reloadTime < reloadDuration)
+                {
+                    aimWeight = Mathf.Lerp(aimWeightClone, 0, reloadTime / reloadDuration);
+                    idleWeight = Mathf.Lerp(idleWeightClone, 0, reloadTime / reloadDuration);
+                    reloadTime += Time.deltaTime;
+                }
+                else
+                {
+                    aimWeight = 0;
+                    idleWeight = 0;
+                }
             }
         }
     }

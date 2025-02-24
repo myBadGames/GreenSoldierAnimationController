@@ -27,6 +27,10 @@ public class Clip : MonoBehaviour
     void Revert()
     {
         transform.SetParent(father);
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        transform.localPosition = Vector3.zero;
+        transform.localRotation = Quaternion.Euler(0, -90, 0);
         gameObject.SetActive(false);
     }
 }
