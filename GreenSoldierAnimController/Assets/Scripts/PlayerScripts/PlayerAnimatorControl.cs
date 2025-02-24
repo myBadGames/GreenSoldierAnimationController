@@ -78,8 +78,8 @@ public class PlayerAnimatorControl : MonoBehaviour
 
             bodyVerticalTarget = Mathf.Clamp(bodyVerticalTarget, -1.0f, 1.0f);
             bodyVerticalTarget = -0.02222f * playerController.targetX;
-            bodyHorizontalTarget = 0.101f;
-            headHorizontalTarget = 0.075f;
+            bodyHorizontalTarget = 0.085f;
+            headHorizontalTarget = 0.0375f;
         }
         else if (!playerController.aiming)
         {
