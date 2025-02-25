@@ -31,7 +31,9 @@ public class PlayerAnimationRigging : MonoBehaviour
 
     [SerializeField] private float wickSpeed = 4000.0f;
 
-    [SerializeField] private float aimTypeSurTrue;
+
+    [SerializeField] private float aimTypeGoal;
+    [SerializeField] private float wickChance = 55.0f;
     private float wickVelocity = 0;
     [SerializeField] private float wickSmooth = 0.05f;
 
@@ -87,16 +89,16 @@ public class PlayerAnimationRigging : MonoBehaviour
 
             aimTypeSur = Mathf.Clamp(aimTypeSur, 0, 1000);
 
-            if (playerController.wickChance <= 65)
+            if (playerController.wickChance <= wickChance)
             {
                 aimTypeSur -= playerController.horizontalMouse * wickSpeed * Time.deltaTime;
             }
             else
             { aimTypeSur = 1000; }
-
-            aimTypeSurTrue = Mathf.SmoothDamp(aimTypeSurTrue, aimTypeSur, ref wickVelocity, wickSmooth);
+            aimTypeGoal = Mathf.Clamp01(aimTypeGoal);
             aimType = Mathf.Clamp01(aimType);
-            aimType = aimTypeSurTrue / 1000;
+            aimTypeGoal = aimTypeSur / 1000;
+            aimType = Mathf.SmoothDamp(aimType, aimTypeGoal, ref wickVelocity, wickSmooth);
 
             rightAimN.weight = aimType;
             leftAimN.weight = rightAimN.weight;
