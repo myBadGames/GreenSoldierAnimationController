@@ -29,6 +29,12 @@ public class PlayerAnimationRigging : MonoBehaviour
     [SerializeField] private TwoBoneIKConstraint leftAimN;
     [SerializeField] private TwoBoneIKConstraint leftAimW;
 
+    [SerializeField] private float wickSpeed = 4000.0f;
+
+    [SerializeField] private float aimTypeSurTrue;
+    private float wickVelocity = 0;
+    [SerializeField] private float wickSmooth = 0.05f;
+
     void Start()
     {
         playerController = GetComponent<PlayerController>();
@@ -99,12 +105,4 @@ public class PlayerAnimationRigging : MonoBehaviour
             leftAimW.weight = -leftAimN.weight + 1;
         }
     }
-
-    [SerializeField] private float wickSpeed = 4000.0f;
-
-    [SerializeField] private float aimTypeSurTrue;
-    private float wickVelocity = 0;
-    [SerializeField] private float wickSmooth = 0.05f;
-
-
 }
