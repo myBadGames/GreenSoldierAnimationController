@@ -307,13 +307,13 @@ public class PlayerController : MonoBehaviour
                 shootB = true;
                 targetX -= recoil;
                 bulletCount--;
-                if (animationRigging.aimTypeSur >= 600)
+                if (animationRigging.aimTypeSur >= 400)
                 {
-                    animationRigging.aimTypeSur += 400;
+                    animationRigging.aimTypeSur += (1000 - animationRigging.aimTypeSur);
                 }
-                else if (animationRigging.aimTypeSur <= 375)
+                else if (animationRigging.aimTypeSur <= 400)
                 {
-                    animationRigging.aimTypeSur -= 375;
+                    animationRigging.aimTypeSur -= (1000 - animationRigging.aimTypeSur);
                 }
                 if (forwardDirection.z >= 0.95f || forwardDirection.z <= -0.95)
                 {
