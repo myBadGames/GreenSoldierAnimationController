@@ -22,28 +22,39 @@ public class PlayerAnimationRigging : MonoBehaviour
     [SerializeField] private float aimType;
     public float aimTypeSur;
 
-
-    [SerializeField] private TwoBoneIKConstraint rightAimN;
-    [SerializeField] private TwoBoneIKConstraint rightAimW;    
-    
-    [SerializeField] private TwoBoneIKConstraint leftAimN;
-    [SerializeField] private TwoBoneIKConstraint leftAimW;
-
     [SerializeField] private float wickSpeed = 4000.0f;
-
-
     [SerializeField] private float aimTypeGoal;
     [SerializeField] private float wickChance = 55.0f;
     private float wickVelocity = 0;
     [SerializeField] private float wickSmooth = 0.05f;
 
+    [SerializeField] private TwoBoneIKConstraint rightAimN;
+    [SerializeField] private TwoBoneIKConstraint rightAimW;
+
+    [SerializeField] private TwoBoneIKConstraint leftAimN;
+    [SerializeField] private TwoBoneIKConstraint leftAimW;
+
+    [SerializeField] private MultiParentConstraint leftHandParentAim;
+    [SerializeField] private MultiParentConstraint leftHandParentAim_Wick;
+    [SerializeField] private float leftHandParentAimW_Crouch_Target;
+
+    [SerializeField] private float leftHandParentAimW_Crouch;
+    [SerializeField] private float leftHandParentAimW_Wick_Crouch;
+
+    private void Awake()
+    {
+        firstAim = false;
+        idleWeightTarget = 1.01f;
+        aimTypeGoal = 1.0f;
+        aimType = 1.0f;
+        aimTypeSur = 1000.0f;
+        leftHandParentAimW_Crouch = 0.0f;
+        leftHandParentAimW_Wick_Crouch = 0.0f;
+    }
+
     void Start()
     {
         playerController = GetComponent<PlayerController>();
-        firstAim = false;
-        idleWeightTarget = 1.01f;
-        aimType = 1;
-        aimTypeSur = 1000;
     }
 
     void Update()
@@ -105,6 +116,29 @@ public class PlayerAnimationRigging : MonoBehaviour
 
             rightAimW.weight = -rightAimN.weight + 1;
             leftAimW.weight = -leftAimN.weight + 1;
+
+            if (playerController.crouch)
+            {
+                leftHandParentAimW_Crouch_Target = 1;
+            }
+            else
+            {
+                leftHandParentAimW_Crouch_Target = 0;
+            }
+
+            var sourceObjects = leftHandParentAim.data.sourceObjects;
+            leftHandParentAimW_Crouch = Mathf.Clamp01(leftHandParentAimW_Crouch);
+            leftHandParentAimW_Crouch = Mathf.Lerp(leftHandParentAimW_Crouch, leftHandParentAimW_Crouch_Target, Time.deltaTime * 20);
+            sourceObjects.SetWeight(1, leftHandParentAimW_Crouch);
+            leftHandParentAim.data.sourceObjects = sourceObjects;
+
+            //????????????????????????????????????????????????????
+
+            var sourceObjectsWick = leftHandParentAim_Wick.data.sourceObjects;
+            leftHandParentAimW_Wick_Crouch = Mathf.Clamp01(leftHandParentAimW_Wick_Crouch);
+            leftHandParentAimW_Wick_Crouch = Mathf.Lerp(leftHandParentAimW_Wick_Crouch, leftHandParentAimW_Crouch_Target, Time.deltaTime * 20);
+            sourceObjectsWick.SetWeight(1, leftHandParentAimW_Wick_Crouch);
+            leftHandParentAim_Wick.data.sourceObjects = sourceObjectsWick;
         }
     }
 }

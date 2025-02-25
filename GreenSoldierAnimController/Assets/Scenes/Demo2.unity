@@ -1997,6 +1997,37 @@ MonoBehaviour:
       z: 1
     m_MaintainPositionOffset: 0
     m_MaintainRotationOffset: 0
+--- !u!1 &485012878
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 485012879}
+  m_Layer: 0
+  m_Name: CrouchIkAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &485012879
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 485012878}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.51, y: -0.004, z: -0.49}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1029870031}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &506471676
 GameObject:
   m_ObjectHideFlags: 0
@@ -4258,13 +4289,13 @@ MonoBehaviour:
   m_Data:
     m_ConstrainedObject: {fileID: 1086334413}
     m_SourceObjects:
-      m_Length: 1
+      m_Length: 2
       m_Item0:
         transform: {fileID: 1029870031}
         weight: 1
       m_Item1:
-        transform: {fileID: 0}
-        weight: 0
+        transform: {fileID: 2091196103}
+        weight: 1
       m_Item2:
         transform: {fileID: 0}
         weight: 0
@@ -4583,13 +4614,13 @@ MonoBehaviour:
   m_Data:
     m_ConstrainedObject: {fileID: 1311687696}
     m_SourceObjects:
-      m_Length: 1
+      m_Length: 2
       m_Item0:
         transform: {fileID: 1029870031}
         weight: 1
       m_Item1:
-        transform: {fileID: 0}
-        weight: 0
+        transform: {fileID: 485012879}
+        weight: 1
       m_Item2:
         transform: {fileID: 0}
         weight: 0
@@ -7111,11 +7142,19 @@ MonoBehaviour:
   aimWeightClone: 0
   aimType: 0
   aimTypeSur: 0
+  wickSpeed: 4000
+  aimTypeGoal: 0
+  wickChance: 55
+  wickSmooth: 0.05
   rightAimN: {fileID: 2089990052}
   rightAimW: {fileID: 311811719}
   leftAimN: {fileID: 789184430}
   leftAimW: {fileID: 1014887966}
-  wickVelocity: 750
+  leftHandParentAim: {fileID: 1256077930}
+  leftHandParentAim_Wick: {fileID: 1186412982}
+  leftHandParentAimW_Crouch: 0
+  leftHandParentAimW_Crouch_Target: 0
+  leftHandParentAimW_Wick_Crouch: 0
 --- !u!4 &1941980550 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3754538795964690796, guid: 427587d9b114d964f85be6c567e6050b,
@@ -7271,6 +7310,37 @@ MonoBehaviour:
     m_HintWeight: 1
     m_MaintainTargetPositionOffset: 0
     m_MaintainTargetRotationOffset: 0
+--- !u!1 &2091196102
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2091196103}
+  m_Layer: 0
+  m_Name: CrouchIkAnchor_Wick
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2091196103
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2091196102}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.12, y: -0.22, z: -0.52}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1029870031}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2093317012
 GameObject:
   m_ObjectHideFlags: 0
@@ -7689,6 +7759,14 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 865395088}
+    - targetCorrespondingSourceObject: {fileID: 5667432370953035779, guid: 427587d9b114d964f85be6c567e6050b,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 485012879}
+    - targetCorrespondingSourceObject: {fileID: 5667432370953035779, guid: 427587d9b114d964f85be6c567e6050b,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2091196103}
     - targetCorrespondingSourceObject: {fileID: 5868134371617237371, guid: 427587d9b114d964f85be6c567e6050b,
         type: 3}
       insertIndex: -1
