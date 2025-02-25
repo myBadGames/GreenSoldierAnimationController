@@ -25,7 +25,7 @@ public class PlayerController : MonoBehaviour
     public bool aiming;
 
     [SerializeField] private Quaternion newRotation;
-    [SerializeField] private float horizontalMouse;
+    public float horizontalMouse;
     [SerializeField] private float verticalMouse;
 
     private Transform focalPoint;
@@ -95,6 +95,8 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private Transform clips;
     [SerializeField] private float clipTime = 0.35f;
+
+   public float wickChance;
 
     private void Start()
     {
@@ -216,11 +218,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+
     private void RotateCamera()
     {
         horizontalMouse = Input.GetAxisRaw("Mouse X");
         targetY += horizontalMouse * rotationSpeed * Time.deltaTime;
-
         verticalMouse = Input.GetAxis("Mouse Y");
         targetX = Mathf.Clamp(targetX, -xRotationLimit, xRotationLimit);
         targetX += -verticalMouse * rotationSpeed / 2 * Time.deltaTime;
@@ -271,6 +273,15 @@ public class PlayerController : MonoBehaviour
         if (Input.GetButton("Fire2") && !running && !vaulting && !reload) 
         {
             aiming = true;
+        } 
+        if (Input.GetButtonDown("Fire2") && !running && !vaulting && !reload) 
+        {
+            wickChance = Random.Range(0, 100f);
+
+            if (wickChance <= 60)
+            {
+                animationRigging.aimTypeSur = 1000;
+            }
 
             if (!animationRigging.firstAim)
             {

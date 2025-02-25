@@ -19,11 +19,24 @@ public class PlayerAnimationRigging : MonoBehaviour
     [SerializeField] private float idleWeightClone;
     [SerializeField] private float aimWeightClone;
 
+    [SerializeField] private float aimType;
+    public float aimTypeSur;
+
+
+    [SerializeField] private TwoBoneIKConstraint rightAimN;
+    [SerializeField] private TwoBoneIKConstraint rightAimW;    
+    
+    [SerializeField] private TwoBoneIKConstraint leftAimN;
+    [SerializeField] private TwoBoneIKConstraint leftAimW;
+    [SerializeField] private float wickVelocity = 750.0f;
+
     void Start()
     {
         playerController = GetComponent<PlayerController>();
         firstAim = false;
         idleWeightTarget = 1.01f;
+        aimType = 1;
+        aimTypeSur = 1000;
     }
 
     void Update()
@@ -44,7 +57,6 @@ public class PlayerAnimationRigging : MonoBehaviour
                 {
                     idleWeightTarget = -0.01f;
                     aimWeightTarget = 1.01f;
-
                 }
 
                 idleWeight = Mathf.Lerp(idleWeight, idleWeightTarget, Time.deltaTime * lerpSpeed);
@@ -67,6 +79,23 @@ public class PlayerAnimationRigging : MonoBehaviour
                     idleWeight = 0;
                 }
             }
+
+            aimTypeSur = Mathf.Clamp(aimTypeSur, 0, 1000);
+
+            if (playerController.wickChance <= 65)
+            {
+                aimTypeSur -= playerController.horizontalMouse * wickVelocity * Time.deltaTime;
+            }
+            else
+            { aimTypeSur = 1000; }
+            aimType = Mathf.Clamp01(aimType);
+            aimType = aimTypeSur / 1000;
+
+            rightAimN.weight = aimType;
+            leftAimN.weight = rightAimN.weight;
+
+            rightAimW.weight = -rightAimN.weight + 1;
+            leftAimW.weight = -leftAimN.weight + 1;
         }
     }
 }
