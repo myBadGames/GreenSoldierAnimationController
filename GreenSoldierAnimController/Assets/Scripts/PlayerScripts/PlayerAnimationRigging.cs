@@ -28,7 +28,6 @@ public class PlayerAnimationRigging : MonoBehaviour
     
     [SerializeField] private TwoBoneIKConstraint leftAimN;
     [SerializeField] private TwoBoneIKConstraint leftAimW;
-    [SerializeField] private float wickVelocity = 750.0f;
 
     void Start()
     {
@@ -84,12 +83,14 @@ public class PlayerAnimationRigging : MonoBehaviour
 
             if (playerController.wickChance <= 65)
             {
-                aimTypeSur -= playerController.horizontalMouse * wickVelocity * Time.deltaTime;
+                aimTypeSur -= playerController.horizontalMouse * wickSpeed * Time.deltaTime;
             }
             else
             { aimTypeSur = 1000; }
+
+            aimTypeSurTrue = Mathf.SmoothDamp(aimTypeSurTrue, aimTypeSur, ref wickVelocity, wickSmooth);
             aimType = Mathf.Clamp01(aimType);
-            aimType = aimTypeSur / 1000;
+            aimType = aimTypeSurTrue / 1000;
 
             rightAimN.weight = aimType;
             leftAimN.weight = rightAimN.weight;
@@ -98,4 +99,12 @@ public class PlayerAnimationRigging : MonoBehaviour
             leftAimW.weight = -leftAimN.weight + 1;
         }
     }
+
+    [SerializeField] private float wickSpeed = 4000.0f;
+
+    [SerializeField] private float aimTypeSurTrue;
+    private float wickVelocity = 0;
+    [SerializeField] private float wickSmooth = 0.05f;
+
+
 }
