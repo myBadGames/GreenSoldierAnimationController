@@ -117,7 +117,7 @@ Rigidbody:
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 392
+    m_Bits: 904
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 119
@@ -138,7 +138,7 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 392
+    m_Bits: 904
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 119

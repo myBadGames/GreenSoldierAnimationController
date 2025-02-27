@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Obstacles
   - Enemy
+  - CheckFront
   layers:
   - Default
   - TransparentFX
@@ -16,7 +17,7 @@ TagManager:
   - Obstacles
   - Clip
   - Enemy
-  - 
+  - CheckFront
   - 
   - 
   - 

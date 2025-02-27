@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 2930953393404845752}
   - component: {fileID: 414735414730354631}
   - component: {fileID: 4652386589410440320}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: CheckFront
-  m_TagString: Untagged
+  m_TagString: CheckFront
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -46,7 +46,7 @@ BoxCollider:
     m_Bits: 64
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 55
+    m_Bits: 447
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
