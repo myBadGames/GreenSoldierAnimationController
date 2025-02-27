@@ -181,7 +181,7 @@ GameObject:
   - component: {fileID: 186366210302156564}
   - component: {fileID: 6875269793977615667}
   - component: {fileID: 5020767151991032974}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -297,6 +297,14 @@ MonoBehaviour:
   checkFront: {fileID: 0}
   start: {x: 0, y: 0, z: 0}
   destination: {x: 0, y: 0, z: 0}
+  reload: 0
+  reloadTimer: 1.15
+  bulletCount: 0
+  shootB: 0
+  recoil: 3
+  clips: {fileID: 0}
+  clipTime: 0.35
+  wickChance: 0
 --- !u!114 &6875269793977615667
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -314,7 +322,10 @@ MonoBehaviour:
   aiming: 0
   bodyVertical: 0
   bodyVerticalTarget: 0
-  bodyVerticalSmoothTime: 0.05
+  bodyHorizontal: 0
+  bodyHorizontalTarget: 0
+  headHorizontal: 0
+  headHorizontalTarget: 0
   crouchB: 0
   vault: 0
 --- !u!114 &5020767151991032974
