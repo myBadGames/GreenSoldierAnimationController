@@ -98,6 +98,8 @@ public class PlayerController : MonoBehaviour
 
    public float wickChance;
 
+    [SerializeField] private GameObject crosshair;
+
     private void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -125,6 +127,13 @@ public class PlayerController : MonoBehaviour
         ModelRotation();
         ModelPosition();
         ObstacleCollision();
+
+        if (!aiming)
+        {
+            crosshair.SetActive(false);
+        }
+        else
+        { crosshair.SetActive(true); }
     }
 
     private void MovementInput()
