@@ -1509,7 +1509,6 @@ GameObject:
   - component: {fileID: 5852093863665090867}
   - component: {fileID: 6750247631085925457}
   - component: {fileID: 2567017346821796916}
-  - component: {fileID: 1232328647601528046}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
@@ -1527,7 +1526,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 15}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
+  m_LocalScale: {x: 0.15, y: 0.15, z: 0.15}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6999781715531160756}
@@ -1582,27 +1581,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &1232328647601528046
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2913446073598020917}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2934663428190403315
 GameObject:
   m_ObjectHideFlags: 0
@@ -4891,6 +4869,8 @@ MonoBehaviour:
   clips: {fileID: 4478093209103165881}
   clipTime: 0.35
   wickChance: 0
+  crosshair: {fileID: 0}
+  shotDistance: 80
 --- !u!114 &6875269793977615667
 MonoBehaviour:
   m_ObjectHideFlags: 0
