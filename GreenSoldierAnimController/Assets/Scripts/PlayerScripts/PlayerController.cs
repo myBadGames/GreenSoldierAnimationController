@@ -329,6 +329,8 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public Material red;
+    public Material blu;
 
     private void Shoot()
     {
@@ -342,6 +344,24 @@ public class PlayerController : MonoBehaviour
             {
                 Debug.Log("HIT");
                 Debug.DrawRay(mainCam.transform.position, mainCam.transform.forward * shotDistance, Color.red, 120);
+
+                MeshRenderer meshR = hit.collider.GetComponent<MeshRenderer>();
+                Debug.Log(meshR.material.name);
+
+                if (meshR.material.color == red.color)
+                {
+                    meshR.material = blu;
+                    Debug.Log("Red");
+                }
+                 else if (meshR.material.color == blu.color)
+                {
+                    meshR.material = red;
+                }          
+                else if (meshR.material.color != red.color && meshR.material.color != blu.color)
+                {
+                    Debug.Log("KK");
+                    meshR.material = red;
+                }
             }
         }
         targetX -= recoil;

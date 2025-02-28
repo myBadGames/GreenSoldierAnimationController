@@ -14,6 +14,7 @@ public class EnemyControl : MonoBehaviour
     [SerializeField] private Transform[] fakeLegL;
     [SerializeField] private Transform[] fakeLegR;
     [SerializeField] private float delay;
+    [SerializeField] private float clipSpeed;
 
     void Start()
     {
@@ -26,10 +27,15 @@ public class EnemyControl : MonoBehaviour
         {
             anim.Play("Soldier_Walk");
         }
+
         if (Input.GetKeyDown(KeyCode.L))
         {
             anim.Play("A_shoot");
+            StartCoroutine(Shoot());
         }
+
+        anim["A_shoot"].speed = clipSpeed;
+
         if (Input.GetKeyDown(KeyCode.M))
         {
             StartCoroutine(DeathUchiMata());
@@ -83,5 +89,16 @@ public class EnemyControl : MonoBehaviour
         CopyTransformList(realLegR, fakeLegR);
         fakeModel.SetActive(true);
         realModel.SetActive(false);
+    }
+
+    [SerializeField] private GameObject clip;
+
+    IEnumerator Shoot()
+    {
+        while (anim["A_shoot"] == anim.clip)
+        {
+            yield return new WaitForSeconds(.41515f);
+            Debug.Log("hit");
+        }
     }
 }
