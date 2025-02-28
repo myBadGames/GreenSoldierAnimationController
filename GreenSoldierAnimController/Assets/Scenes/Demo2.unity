@@ -1584,6 +1584,11 @@ PrefabInstance:
       propertyPath: aimCamCrouch
       value: 
       objectReference: {fileID: 1623778937}
+    - target: {fileID: 186366210302156564, guid: 427587d9b114d964f85be6c567e6050b,
+        type: 3}
+      propertyPath: shotDistance
+      value: 80
+      objectReference: {fileID: 0}
     - target: {fileID: 2567017346821796916, guid: 427587d9b114d964f85be6c567e6050b,
         type: 3}
       propertyPath: m_Enabled
@@ -1639,12 +1644,28 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5852093863665090867, guid: 427587d9b114d964f85be6c567e6050b,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 5852093863665090867, guid: 427587d9b114d964f85be6c567e6050b,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 5852093863665090867, guid: 427587d9b114d964f85be6c567e6050b,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.15
+      objectReference: {fileID: 0}
     - target: {fileID: 8260172279740071164, guid: 427587d9b114d964f85be6c567e6050b,
         type: 3}
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1232328647601528046, guid: 427587d9b114d964f85be6c567e6050b, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

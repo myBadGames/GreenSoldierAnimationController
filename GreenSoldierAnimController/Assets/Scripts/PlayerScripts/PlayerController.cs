@@ -43,6 +43,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private GameObject mainCamera;
     [SerializeField] private GameObject aimCamera;
+    private Camera mainCam;
     [SerializeField] private GameObject crouchCam;
     [SerializeField] private GameObject aimCamCrouch;
     [SerializeField] private CinemachineImpulseSource impulseSource;
@@ -96,9 +97,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform clips;
     [SerializeField] private float clipTime = 0.35f;
 
-   public float wickChance;
+    public float wickChance;
 
     [SerializeField] private GameObject crosshair;
+    [SerializeField] private float shotDistance = 80;
+
 
     private void Start()
     {
@@ -110,6 +113,7 @@ public class PlayerController : MonoBehaviour
         compass = transform.GetChild(2);
         impulseSource = GetComponent<CinemachineImpulseSource>();
         colliderLerpTime = colliderLerpDuration;
+        mainCam = Camera.main;
         modelZ = 0;
         bulletCount = 8;
     }
@@ -312,28 +316,7 @@ public class PlayerController : MonoBehaviour
         {
             if (Input.GetButtonDown("Fire1") && Time.time > fireTime && bulletCount > 0 && !reload)
             {
-                fireTime = Time.time + 1 / fireRate;
-                shootB = true;
-                targetX -= recoil;
-                bulletCount--;
-                if (animationRigging.aimTypeSur >= 400)
-                {
-                    animationRigging.aimTypeSur += (1000 - animationRigging.aimTypeSur);
-                }
-                else if (animationRigging.aimTypeSur <= 400)
-                {
-                    animationRigging.aimTypeSur -= (1000 - animationRigging.aimTypeSur);
-                }
-                if (forwardDirection.z >= 0.95f || forwardDirection.z <= -0.95)
-                {
-                    impulseDirection = forwardDirection;
-                }
-                else if (strafeDirection.z >= 0.95f || strafeDirection.z <= -0.95f)
-                {
-                    impulseDirection = strafeDirection;
-                }
-
-                impulseSource.GenerateImpulse(impulseDirection);
+                Shoot();
             }
         }
 
@@ -344,6 +327,44 @@ public class PlayerController : MonoBehaviour
                 shootB = false;
             }
         }
+    }
+
+
+    private void Shoot()
+    {
+        fireTime = Time.time + 1 / fireRate;
+        shootB = true;
+
+        RaycastHit hit;
+        if (Physics.Raycast(mainCam.transform.position, mainCam.transform.forward * shotDistance, out hit))
+        {
+            if (hit.collider.gameObject.CompareTag("Finish"))
+            {
+                Debug.Log("HIT");
+                Debug.DrawRay(mainCam.transform.position, mainCam.transform.forward * shotDistance, Color.red, 120);
+            }
+        }
+        targetX -= recoil;
+
+        bulletCount--;
+        if (animationRigging.aimTypeSur >= 400)
+        {
+            animationRigging.aimTypeSur += (1000 - animationRigging.aimTypeSur);
+        }
+        else if (animationRigging.aimTypeSur <= 400)
+        {
+            animationRigging.aimTypeSur -= (1000 - animationRigging.aimTypeSur);
+        }
+        if (forwardDirection.z >= 0.95f || forwardDirection.z <= -0.95)
+        {
+            impulseDirection = forwardDirection;
+        }
+        else if (strafeDirection.z >= 0.95f || strafeDirection.z <= -0.95f)
+        {
+            impulseDirection = strafeDirection;
+        }
+
+        impulseSource.GenerateImpulse(impulseDirection);
     }
 
     private void Reload()
