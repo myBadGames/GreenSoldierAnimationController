@@ -1561,6 +1561,11 @@ PrefabInstance:
       objectReference: {fileID: 1893350358}
     - target: {fileID: 186366210302156564, guid: 427587d9b114d964f85be6c567e6050b,
         type: 3}
+      propertyPath: crosshair
+      value: 
+      objectReference: {fileID: 2007584230}
+    - target: {fileID: 186366210302156564, guid: 427587d9b114d964f85be6c567e6050b,
+        type: 3}
       propertyPath: crouchCam
       value: 
       objectReference: {fileID: 691835284}
