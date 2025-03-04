@@ -32,6 +32,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4760141155573951738}
+  - {fileID: 5642334225531012101}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!143 &213266971064745662
@@ -101,6 +102,23 @@ MonoBehaviour:
   - {fileID: 5697856586294720117}
   - {fileID: 7954827589607675738}
   delay: 0.65
+  walkAnimSpeed: 1.25
+  shootAnimSpeed: 2
+  reloadAnimSpeed: 1.25
+  animName: 
+  walking: 0
+  shooting: 0
+  distanceToPlayer: 0
+  distanceToPlayerLimit: 25
+  playerClose: 0
+  playerTracker: {fileID: 7010584254109879126}
+  playerPos: {x: 0, y: 0, z: 0}
+  playerPosZLimit: -1
+  playerDirection: {x: 0, y: 0, z: 0}
+  playerSpotted: 0
+  attackRotation: {x: 0, y: 0, z: 0, w: 0}
+  slerpSpeed: 20
+  movementSpeed: 0
 --- !u!1 &5522613895582254150
 GameObject:
   m_ObjectHideFlags: 0
@@ -132,6 +150,37 @@ Transform:
   m_Children:
   - {fileID: 4047986172148607367}
   - {fileID: 5914503659685387009}
+  m_Father: {fileID: 1239037089998353876}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7010584254109879126
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5642334225531012101}
+  m_Layer: 8
+  m_Name: PlayerTracker
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5642334225531012101
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7010584254109879126}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
   m_Father: {fileID: 1239037089998353876}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1822566531548018030
@@ -307,7 +356,7 @@ PrefabInstance:
     - target: {fileID: 203826597633740616, guid: f3499449bb7e8704db4510f17b756d94,
         type: 3}
       propertyPath: m_Animations.Array.size
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 203826597633740616, guid: f3499449bb7e8704db4510f17b756d94,
         type: 3}
@@ -318,12 +367,12 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Animations.Array.data[1]
       value: 
-      objectReference: {fileID: 7400000, guid: e171c2f8c5861e246807fea3a8560d72, type: 2}
+      objectReference: {fileID: 7400000, guid: d17baa9d7afd32d4bb2bf460fb6ed004, type: 2}
     - target: {fileID: 203826597633740616, guid: f3499449bb7e8704db4510f17b756d94,
         type: 3}
       propertyPath: m_Animations.Array.data[2]
       value: 
-      objectReference: {fileID: 7400000, guid: bf7f45a65f8f68d4c951619f949e5f27, type: 2}
+      objectReference: {fileID: 7400000, guid: 9a6925af0ab74cd4fbae7f5fd53aae11, type: 2}
     - target: {fileID: 3042349241871347034, guid: f3499449bb7e8704db4510f17b756d94,
         type: 3}
       propertyPath: m_Name

@@ -1423,9 +1423,11 @@ Animation:
   m_Animation: {fileID: 7400000, guid: 1fecb5b7880d30c488b155124a873867, type: 2}
   m_Animations:
   - {fileID: 7400000, guid: 1fecb5b7880d30c488b155124a873867, type: 2}
+  - {fileID: 7400000, guid: d17baa9d7afd32d4bb2bf460fb6ed004, type: 2}
+  - {fileID: 7400000, guid: 9a6925af0ab74cd4fbae7f5fd53aae11, type: 2}
   - {fileID: 7400000, guid: e171c2f8c5861e246807fea3a8560d72, type: 2}
   m_WrapMode: 0
-  m_PlayAutomatically: 1
+  m_PlayAutomatically: 0
   m_AnimatePhysics: 0
   m_CullingType: 0
 --- !u!1 &3148218952972340699

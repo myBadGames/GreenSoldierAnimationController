@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class EnemyControl : MonoBehaviour
 {
+    private CharacterController controller;
+    private GameObject player;
     private Animation anim;
     [SerializeField] private GameObject realModel;
     [SerializeField] private GameObject fakeModel;
@@ -14,48 +16,170 @@ public class EnemyControl : MonoBehaviour
     [SerializeField] private Transform[] fakeLegL;
     [SerializeField] private Transform[] fakeLegR;
     [SerializeField] private float delay;
-    [SerializeField] private float clipSpeed;
+    [SerializeField] private float walkAnimSpeed = 1.25f;
+    [SerializeField] private float shootAnimSpeed = 2.0f;
+    [SerializeField] private float reloadAnimSpeed = 1.25f;
+    [SerializeField] private string animName;
+
+    [SerializeField] private bool walking;
+    [SerializeField] private bool shooting;
+
+    [SerializeField] private float distanceToPlayer;
+    [SerializeField] private float distanceToPlayerLimit = 25.0f;
+    [SerializeField] private bool playerClose;
+    [SerializeField] private GameObject playerTracker;
+    [SerializeField] private Vector3 playerPos;
+    [SerializeField] private float playerPosZLimit = -1.0f;
+    [SerializeField] private Vector3 playerDirection;
+    [SerializeField] private bool playerSpotted;
+    [SerializeField] private Quaternion attackRotation;
+    [SerializeField] private float slerpSpeed = 20.0f;
+    private Vector3 offsetEyes = new Vector3(0, 1.5f, 0);
+
+    [SerializeField] private float movementSpeed;
 
     void Start()
     {
+        controller = GetComponent<CharacterController>();
         anim = GetComponentInChildren<Animation>();
+        player = GameObject.FindGameObjectWithTag("Player");
+        walking = true;
+        shooting = false;
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K))
+        Movement();
+        AnimControls();
+        SearchPlayerLogic();
+        TestControls();
+    }
+
+    private void FixedUpdate()
+    {
+        distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+    }
+
+    void Movement()
+    {
+        if (walking && !playerSpotted)
         {
-            anim.Play("Soldier_Walk");
+            movementSpeed = 0;
+        }
+        else if (walking && playerSpotted)
+        {
+            movementSpeed = 100;
+        }
+        else if (shooting && !walking)
+        {
+            movementSpeed = 0;
         }
 
-        if (Input.GetKeyDown(KeyCode.L))
+        controller.SimpleMove(transform.forward * movementSpeed * Time.deltaTime);
+    }
+
+    void SearchPlayerLogic()
+    {
+        if (distanceToPlayer <= distanceToPlayerLimit)
         {
-            anim.Play("A_shoot");
-            StartCoroutine(Shoot());
+            playerClose = true;
+        }
+        else
+        {
+            playerClose = false;
         }
 
-        anim["A_shoot"].speed = clipSpeed;
-
-        if (Input.GetKeyDown(KeyCode.M))
+        if (playerClose)
         {
-            StartCoroutine(DeathUchiMata());
+            playerTracker.transform.position = player.transform.position;
+            playerPos = playerTracker.transform.localPosition;
+            playerDirection = (player.transform.position - transform.position).normalized;
         }
 
-        if (Input.GetKeyDown(KeyCode.N))
+        if (!playerSpotted)
         {
-            CopyTransformSpine(realSpine, fakeSpine);
-            CopyTransformList(realLegL, fakeLegL);
-            CopyTransformList(realLegR, fakeLegR);
-            fakeModel.SetActive(true);
-            realModel.SetActive(false);
-        }    
-        
-        if (Input.GetKeyDown(KeyCode.J))
+            if (playerClose)
+            {
+                if (playerPos.z > playerPosZLimit)
+                {
+                    if (IsPlayerSeen())
+                    {
+                        playerSpotted = true;
+                    }
+                }
+            }
+        }
+        else 
         {
-            fakeModel.transform.localPosition = Vector3.zero;
-            fakeModel.transform.localRotation = Quaternion.Euler(0, 0, 0);
-            fakeModel.SetActive(false);
-            realModel.SetActive(true);
+            if (playerClose)
+            {
+                attackRotation = Quaternion.LookRotation(playerDirection, Vector3.up);
+
+                if (playerPos.z > playerPosZLimit)
+                {
+                    if (IsPlayerSeen())
+                    {
+                        transform.rotation = Quaternion.Slerp(transform.rotation, attackRotation, Time.deltaTime * slerpSpeed);
+                        shooting = true;
+                        walking = false;
+                    }
+                    else
+                    {
+                        shooting = false;
+                        walking = true;
+                    }                         
+                }
+            }
+            else
+            {
+                shooting = false;
+                walking = true;
+            }
+        }
+    }
+
+    private bool IsPlayerSeen()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position + offsetEyes, playerDirection * distanceToPlayerLimit, out hit))
+        {
+            if (hit.collider.gameObject == player)
+            {
+                Debug.DrawRay(transform.position +offsetEyes, playerDirection * distanceToPlayerLimit, Color.green);
+                return true;
+            }
+            else
+            {
+                Debug.DrawRay(transform.position + offsetEyes, playerDirection * distanceToPlayerLimit, Color.blue);
+                return false;
+            }
+        }
+        else
+        {
+            Debug.DrawRay(transform.position + offsetEyes, playerDirection * distanceToPlayerLimit, Color.yellow);
+            return false;
+        }
+    }
+
+    void AnimControls()
+    {
+        anim["Soldier_Walk"].speed = walkAnimSpeed;
+        anim["A_shoot"].speed = shootAnimSpeed;
+        anim["A_reloading"].speed = reloadAnimSpeed;
+
+        if (walking && !shooting)
+        {
+            if (!anim.IsPlaying("Soldier_Walk"))
+            {
+                anim.Play("Soldier_Walk");
+            }
+        }
+        else if (shooting && !walking)
+        {
+            if (!anim.IsPlaying("A_shoot"))
+            {
+                anim.Play("A_shoot");
+            }
         }
     }
 
@@ -91,14 +215,35 @@ public class EnemyControl : MonoBehaviour
         realModel.SetActive(false);
     }
 
-    [SerializeField] private GameObject clip;
 
-    IEnumerator Shoot()
+
+    void TestControls()
     {
-        while (anim["A_shoot"] == anim.clip)
+        if (Input.GetKeyDown(KeyCode.K))
         {
-            yield return new WaitForSeconds(.41515f);
-            Debug.Log("hit");
+            anim.Play(animName);
+        }
+
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            StartCoroutine(DeathUchiMata());
+        }
+
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            CopyTransformSpine(realSpine, fakeSpine);
+            CopyTransformList(realLegL, fakeLegL);
+            CopyTransformList(realLegR, fakeLegR);
+            fakeModel.SetActive(true);
+            realModel.SetActive(false);
+        }
+
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            fakeModel.transform.localPosition = Vector3.zero;
+            fakeModel.transform.localRotation = Quaternion.Euler(0, 0, 0);
+            fakeModel.SetActive(false);
+            realModel.SetActive(true);
         }
     }
 }
