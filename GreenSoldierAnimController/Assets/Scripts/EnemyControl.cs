@@ -37,14 +37,28 @@ public class EnemyControl : MonoBehaviour
     private Vector3 offsetEyes = new Vector3(0, 1.5f, 0);
 
     [SerializeField] private float movementSpeed;
+    [SerializeField] private bool sentry;
+    [SerializeField] private bool patrol;
+    [SerializeField] private float patrolFreq = 5.0f;
 
     void Start()
     {
         controller = GetComponent<CharacterController>();
         anim = GetComponentInChildren<Animation>();
         player = GameObject.FindGameObjectWithTag("Player");
-        walking = true;
-        shooting = false;
+
+        if (patrol)
+        {
+            sentry = false;
+            walking = true;
+            InvokeRepeating("Patrol", patrolFreq, patrolFreq);
+        }
+        else if (sentry)
+        {
+            patrol = false;
+            walking = false;
+            movementSpeed = 0;
+        }
     }
 
     void Update()
@@ -62,9 +76,9 @@ public class EnemyControl : MonoBehaviour
 
     void Movement()
     {
-        if (walking && !playerSpotted)
+        if (walking && !playerSpotted && !sentry)
         {
-            movementSpeed = 0;
+            movementSpeed = 100.0f;
         }
         else if (walking && playerSpotted)
         {
@@ -105,6 +119,15 @@ public class EnemyControl : MonoBehaviour
                     if (IsPlayerSeen())
                     {
                         playerSpotted = true;
+                        if (patrol)
+                        {
+                            StopCoroutine(Turn());
+                            patrol = false;
+                        }
+                        else if (sentry)
+                        {
+                            sentry = false;
+                        }
                     }
                 }
             }
@@ -215,7 +238,31 @@ public class EnemyControl : MonoBehaviour
         realModel.SetActive(false);
     }
 
+    void Patrol()
+    {
+        if (patrol)
+        {
+            StartCoroutine(Turn());
+        }
+    }
 
+    IEnumerator Turn()
+    {
+        float timeE = 0;
+        float duration = 0.5f;
+        Quaternion start = transform.rotation;
+        Quaternion end = Quaternion.LookRotation(-transform.forward);
+
+        while (timeE < duration)
+        {
+            transform.rotation = Quaternion.Lerp(start, end, timeE / duration);
+            timeE += Time.deltaTime;
+
+            yield return null;
+        }
+
+        transform.rotation = end;
+    }
 
     void TestControls()
     {
