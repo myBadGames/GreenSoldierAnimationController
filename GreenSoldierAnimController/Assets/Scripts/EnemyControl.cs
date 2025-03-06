@@ -40,25 +40,15 @@ public class EnemyControl : MonoBehaviour
     [SerializeField] private bool sentry;
     [SerializeField] private bool patrol;
     [SerializeField] private float patrolFreq = 5.0f;
+    [SerializeField] private bool turning;
 
     void Start()
     {
         controller = GetComponent<CharacterController>();
         anim = GetComponentInChildren<Animation>();
         player = GameObject.FindGameObjectWithTag("Player");
+        DecideRole();
 
-        if (patrol)
-        {
-            sentry = false;
-            walking = true;
-            InvokeRepeating("Patrol", patrolFreq, patrolFreq);
-        }
-        else if (sentry)
-        {
-            patrol = false;
-            walking = false;
-            movementSpeed = 0;
-        }
     }
 
     void Update()
@@ -76,11 +66,11 @@ public class EnemyControl : MonoBehaviour
 
     void Movement()
     {
-        if (walking && !playerSpotted && !sentry)
+        if (walking && !playerSpotted && !sentry && !turning)
         {
             movementSpeed = 100.0f;
         }
-        else if (walking && playerSpotted)
+        else if (walking && playerSpotted && !sentry && !turning)
         {
             movementSpeed = 100;
         }
@@ -88,6 +78,11 @@ public class EnemyControl : MonoBehaviour
         {
             movementSpeed = 0;
         }
+        else if (turning)
+        {
+            movementSpeed = 0;
+        }
+
 
         controller.SimpleMove(transform.forward * movementSpeed * Time.deltaTime);
     }
@@ -121,7 +116,6 @@ public class EnemyControl : MonoBehaviour
                         playerSpotted = true;
                         if (patrol)
                         {
-                            StopCoroutine(Turn());
                             patrol = false;
                         }
                         else if (sentry)
@@ -242,16 +236,32 @@ public class EnemyControl : MonoBehaviour
     {
         if (patrol)
         {
-            StartCoroutine(Turn());
+            StartCoroutine(Turn(0));
         }
     }
 
-    IEnumerator Turn()
+    IEnumerator Turn(int dir)
     {
+        turning = true;
+        Vector3 direction = Vector3.zero;
+
+        if (dir == 0)
+        {
+            direction = -transform.forward;
+        }
+        else if (dir == 1)
+        {
+            direction = transform.right;
+        }
+        else if (dir == 2)
+        {
+            direction = -transform.right;
+        }
+
         float timeE = 0;
         float duration = 0.5f;
         Quaternion start = transform.rotation;
-        Quaternion end = Quaternion.LookRotation(-transform.forward);
+        Quaternion end = Quaternion.LookRotation(direction);
 
         while (timeE < duration)
         {
@@ -262,6 +272,7 @@ public class EnemyControl : MonoBehaviour
         }
 
         transform.rotation = end;
+        turning = false;
     }
 
     void TestControls()
@@ -291,6 +302,22 @@ public class EnemyControl : MonoBehaviour
             fakeModel.transform.localRotation = Quaternion.Euler(0, 0, 0);
             fakeModel.SetActive(false);
             realModel.SetActive(true);
+        }
+    }
+
+    void DecideRole()
+    {
+        if (patrol)
+        {
+            sentry = false;
+            walking = true;
+            InvokeRepeating("Patrol", patrolFreq, patrolFreq);
+        }
+        else if (sentry)
+        {
+            patrol = false;
+            walking = false;
+            movementSpeed = 0;
         }
     }
 }
